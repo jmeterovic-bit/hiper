@@ -5,6 +5,7 @@ import '@fontsource/inter/800.css';
 import { COLORS, SIDES, ROUND_MS } from './config.js';
 import { rouletteSteps } from './roulette.js';
 import { parseCardUrl, findTrack } from './cards.js';
+import { loadCatalog } from './catalog.js';
 import { startFx } from './fx.js';
 import { unlockAudio, tick, JINGLES, buzzer, fanfare } from './sounds.js';
 import * as spotify from './spotify.js';
@@ -15,7 +16,6 @@ const SCREENS = ['menu', 'ready', 'roulette', 'picked', 'play', 'timeup', 'end']
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const fx = startFx($('fx'));
 let side = 'A', current = 0, mode = 'idle', raf = 0;
-let cardList = null;
 
 function show(id) { SCREENS.forEach((s) => ($(s).hidden = s !== id)); $('topbar').hidden = id === 'menu'; }
 function wash(c) { $('bgwash').style.background = c; }
@@ -51,6 +51,7 @@ document.querySelectorAll('.side').forEach((b) => b.addEventListener('click', ()
   side = b.dataset.side;
   $('sideLabel').textContent = SIDES[side].name + ' · ' + SIDES[side].level;
   unlockAudio(); keepAwake(true); toReady();
+  loadCatalog().catch(() => {});
 }));
 $('changeSide').onclick = () => { stopRound(); spotify.pause(); fx.setRate(0); wash('var(--bg)'); keepAwake(false); show('menu'); };
 
@@ -74,21 +75,19 @@ function landed() {
   fx.setRate(3); fx.burst(26, '#fff'); JINGLES[current](); buzz();
 }
 
-async function loadCards() {
-  if (cardList) return cardList;
-  const r = await fetch('./cartas.json');
-  cardList = r.ok ? await r.json() : {};
-  return cardList;
-}
 
 // Al escanear: si la carta está en la lista propia, suena en Spotify desde aquí.
 // Si no, se abre la app oficial de Hitster con el enlace de la carta, y la ronda empieza al volver.
 // handoff: 'idle' | 'opening' (se pidió abrir Hitster) | 'away' (la app quedó en segundo plano).
 let handoff = 'idle', handoffTimer = 0, lastOpen = null;
 
-// La app de Hitster no acepta enlaces de otras apps (probado 2026-11-17: se abría su web).
-// Por eso el botón abre la app de Hitster: ahí se escanea la carta y suena. La ronda empieza al volver.
-$('toScan').onclick = () => openInHitster();
+// Con Spotify conectado: la app lee el QR, busca la canción en la lista de Hitster y la pone en Spotify.
+// Sin Spotify (o si la carta no está en la lista): se abre la app de Hitster para escanear ahí; la ronda empieza al volver.
+$('toScan').onclick = () => {
+  if (spotify.isLoggedIn()) return scanHere();
+  alertMsg('Para escanear aquí, entra a Spotify en el menú («Cambiar lado»). También puedes escanear en la app de Hitster.');
+  $('msgActions').hidden = false; $('openHitster').hidden = false;
+};
 
 async function openInHitster() {
   clearMsg();
@@ -111,16 +110,21 @@ async function openInHitster() {
   }, 3000);
 }
 
-// Escaneo propio (sin usar por ahora): sirve cuando public/cartas.json tenga canciones de Spotify.
-export async function scanHere() {
+async function scanHere() {
   clearMsg();
   let text;
   try { text = await scanQr(); } catch (e) { if (!/cancel/i.test(e.message)) alertMsg(e.message); return; }
   if (!text) return;
   const card = parseCardUrl(text);
   if (!card) { alertMsg('Ese QR no es de una carta de Hitster.'); return; }
-  const track = spotify.isLoggedIn() ? findTrack(await loadCards(), card) : null;
-  if (!track) { alertMsg(`La carta ${card.card} no está en la lista.`); return; }
+  let catalog;
+  try { catalog = await loadCatalog(); } catch (e) { alertMsg(e.message); $('msgActions').hidden = false; $('openHitster').hidden = false; return; }
+  const track = findTrack(catalog, card);
+  if (!track) {
+    alertMsg(`La carta ${card.card} (edición ${card.edition}) no está en la lista de Hitster. Puedes escanearla en la app de Hitster.`);
+    $('msgActions').hidden = false; $('openHitster').hidden = false;
+    return;
+  }
   try { await spotify.playTrack(track); startRound(); }
   catch (e) {
     alertMsg(e.message);

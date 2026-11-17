@@ -4,7 +4,7 @@
 1. Menú: Lado A (básico) o Lado B (experto). Mismas categorías que las tarjetas impresas.
 2. Botón grande «¡Vamos!»: ruleta con notas musicales y los 5 colores que frena en una categoría al azar; suena el jingle de esa categoría.
 3. «Escanear tarjeta»: lector de QR de Google (ML Kit). El QR trae `hitstergame.com/<idioma>/<edición>/<número>`.
-4. La app busca la canción en `public/cartas.json` y la pone en Spotify. Ronda de 25 s sin números: notas y colores que aceleran.
+4. La app busca la canción en la lista de Hitster (`src/catalog.js`) y la pone en Spotify. Ronda de 25 s sin números: notas y colores que aceleran.
 5. «¡Tiempo!» en rojo (zumbido, vibración y pausa de Spotify), con «Siguiente ronda» y «¡Bingo! Terminar».
 
 ## Decisiones
@@ -14,12 +14,12 @@
 | Spotify | Web API con PKCE (Client ID en `src/config.js`, redirect `bingovinilo://callback`) | Suena mientras la app sigue en pantalla. Jose tiene Premium. |
 | Token | Se renueva solo; si vence (180 días), la app muestra «Entrar a Spotify» | Límite de Spotify, no se puede quitar. |
 | QR | `scan()` de Google Code Scanner | No pide permiso de cámara y es estable. |
-| Canción de cada carta | «Escanear en Hitster» abre la app oficial de Hitster (se busca por nombre entre las apps del inicio); ahí se escanea y suena. La ronda de 25 s empieza al volver. El escáner propio + `public/cartas.json` quedan en el código (`scanHere`) para cuando haya lista de canciones. | Jose eligió abrir la app de Hitster (2026-11-17). Pasarle el enlace de la carta no sirve: la app de Hitster no acepta enlaces externos y se abre su web (probado 0.2.4). |
+| Canción de cada carta | Con Spotify conectado: escáner propio + lista de Jumbo (`gameset_database.json`, la misma de la app oficial; `{gamesets:[{sku, gameset_data:{cards:[{CardNumber, Spotify}]}}]}`), descargada en el teléfono y guardada en IndexedDB 7 días. Sin Spotify o carta fuera de la lista: botón para escanear en la app de Hitster (la ronda empieza al volver). | Jose eligió la lista de Jumbo (2026-11-17) tras ver que abrir la app de Hitster obliga a escanear dos veces. La lista trae las ediciones Latino (p. ej. aaab0004, aaaa0053, aaaa0102). No se guarda una copia en el repo. |
 | Sonidos | Web Audio generado, sin archivos | Sin licencias y liviano. |
 | Fuentes | Bungee e Inter empaquetadas (@fontsource, licencia OFL) | Funciona sin internet. |
 
 ## Pendiente
-- Una sola lectura de la carta (sin pasar por la app de Hitster) requiere la lista carta → canción de la edición Latino.
+- Probar en el teléfono el escaneo propio con Spotify (edición Latino).
 - Probar en el teléfono el inicio de sesión de Spotify y el lector de QR.
 
 ## Rechazado
@@ -28,6 +28,7 @@
 ## Bitácora
 | Fecha | Versión | Cambio |
 |---|---|---|
+| 2026-11-17 | 0.4.0 | Escaneo propio con la lista de Hitster y canción en Spotify sin salir de la app. La app de Hitster queda como respaldo. |
 | 2026-11-17 | 0.3.1 | Ícono: el disco de vinilo de la app (surcos, etiqueta rosa) sobre fondo #15131F, pedido de Jose. |
 | 2026-11-17 | 0.3.0 | El botón abre la app de Hitster para escanear ahí (la app de Hitster no acepta el enlace de la carta). |
 | 2026-11-17 | 0.2.4 | La pantalla «¡Tiempo!» muestra la categoría de la ronda (color, dado y nombre), pedido de Jose. |

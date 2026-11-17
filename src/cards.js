@@ -1,4 +1,4 @@
-// Lee el enlace del QR de una carta y busca su canción en la lista local (public/cartas.json).
+// Lee el enlace del QR de una carta y busca su canción en la lista de Hitster (src/catalog.js).
 // Formato del QR: http://www.hitstergame.com/<idioma>/<edición>/<número>  (algunas ediciones no traen <edición>).
 
 export function parseCardUrl(text) {
