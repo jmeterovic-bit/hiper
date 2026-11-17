@@ -1,0 +1,31 @@
+// Cámara (lector de QR de Google, sin pedir permiso de cámara), pantalla encendida y vibración.
+import { Capacitor } from '@capacitor/core';
+import { BarcodeScanner, BarcodeFormat } from '@capacitor-mlkit/barcode-scanning';
+import { KeepAwake } from '@capacitor-community/keep-awake';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { Browser } from '@capacitor/browser';
+
+export const isNative = Capacitor.isNativePlatform();
+
+export async function scanQr() {
+  if (!isNative) return window.prompt ? window.prompt('Texto del QR (modo PC):') : null;
+  const { available } = await BarcodeScanner.isGoogleBarcodeScannerModuleAvailable();
+  if (!available) {
+    await BarcodeScanner.installGoogleBarcodeScannerModule();
+    throw new Error('Instalando el lector de QR de Google. Prueba otra vez en unos segundos.');
+  }
+  const { barcodes } = await BarcodeScanner.scan({ formats: [BarcodeFormat.QrCode] });
+  return barcodes?.[0]?.rawValue || null;
+}
+
+export async function keepAwake(on) {
+  try { on ? await KeepAwake.keepAwake() : await KeepAwake.allowSleep(); } catch {}
+}
+
+export async function buzz() {
+  try { await Haptics.impact({ style: ImpactStyle.Heavy }); } catch {}
+}
+
+export async function openUrl(url) {
+  await Browser.open({ url });
+}

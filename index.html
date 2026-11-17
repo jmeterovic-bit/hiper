@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#15131f">
+<title>Bingo del Vinilo</title>
+<link rel="stylesheet" href="./src/style.css">
+</head>
+<body>
+<div id="bgwash"></div>
+<canvas id="fx" aria-hidden="true"></canvas>
+
+<section class="screen" id="menu">
+  <div class="disc spin" aria-hidden="true"></div>
+  <h1>Bingo del<br>Vinilo</h1>
+  <p class="sub">Elige el lado de las tarjetas</p>
+  <div class="sides">
+    <button class="side" data-side="A"><span><b>Lado A</b><small>BÁSICO</small></span><span class="chips" id="chipsA"></span></button>
+    <button class="side" data-side="B"><span><b>Lado B</b><small>EXPERTO</small></span><span class="chips" id="chipsB"></span></button>
+  </div>
+  <button class="spotify" id="spotifyBtn"></button>
+  <p class="version" id="version"></p>
+</section>
+
+<div class="top" id="topbar" hidden><span id="sideLabel"></span><button id="changeSide">Cambiar lado</button></div>
+
+<section class="screen" id="ready" hidden>
+  <button class="big" id="go">¡Vamos!</button>
+  <p class="sub">Toca para elegir la categoría</p>
+</section>
+
+<section class="screen" id="roulette" hidden>
+  <div class="dice" id="rDice" aria-hidden="true"></div>
+  <div class="cat" id="rCat" aria-live="polite"></div>
+</section>
+
+<section class="screen" id="picked" hidden>
+  <div class="dice" id="pDice" aria-hidden="true"></div>
+  <div class="cat" id="pCat"></div>
+  <button class="btn" id="toScan">📷 Escanear tarjeta</button>
+  <p class="msg" id="msg" hidden></p>
+  <div class="row" id="msgActions" hidden>
+    <button class="btn ghost" id="openSpotify" hidden>Abrir Spotify</button>
+    <button class="btn ghost" id="openHitster" hidden>Abrir en la app de Hitster</button>
+  </div>
+</section>
+
+<section class="screen" id="play" hidden>
+  <div class="cat small" id="plCat"></div>
+  <div class="disc spin" id="plDisc" aria-hidden="true"></div>
+  <p class="sub">¡A escuchar!</p>
+</section>
+
+<section class="screen" id="timeup" hidden>
+  <h1>¡Tiempo!</h1>
+  <p class="sub light">Anoten su respuesta</p>
+  <div class="row">
+    <button class="btn" id="next">Siguiente ronda</button>
+    <button class="btn ghost" id="bingo">¡Bingo! Terminar</button>
+  </div>
+</section>
+
+<section class="screen" id="end" hidden>
+  <h1>¡BINGO!</h1>
+  <p class="sub">Revisen la tarjeta del ganador</p>
+  <button class="btn" id="again">Nueva partida</button>
+</section>
+
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>

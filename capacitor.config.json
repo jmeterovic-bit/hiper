@@ -1,0 +1,11 @@
+{
+  "appId": "com.bingovinilo.app",
+  "appName": "Bingo del Vinilo",
+  "webDir": "dist",
+  "android": {
+    "adjustMarginsForEdgeToEdge": "auto"
+  },
+  "plugins": {
+    "CapacitorHttp": { "enabled": true }
+  }
+}
