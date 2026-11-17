@@ -3,7 +3,7 @@ import { Capacitor } from '@capacitor/core';
 import { BarcodeScanner, BarcodeFormat } from '@capacitor-mlkit/barcode-scanning';
 import { KeepAwake } from '@capacitor-community/keep-awake';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
-import { Browser } from '@capacitor/browser';
+import { AppLauncher } from '@capacitor/app-launcher';
 
 export const isNative = Capacitor.isNativePlatform();
 
@@ -26,6 +26,9 @@ export async function buzz() {
   try { await Haptics.impact({ style: ImpactStyle.Heavy }); } catch {}
 }
 
-export async function openUrl(url) {
-  await Browser.open({ url });
+// Abre el enlace con Android (ACTION_VIEW): si la app de Hitster está instalada, lo toma ella.
+export async function openExternal(url) {
+  if (!isNative) { window.open(url, '_blank'); return; }
+  const { completed } = await AppLauncher.openUrl({ url });
+  if (!completed) throw new Error('no se abrió');
 }

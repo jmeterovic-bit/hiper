@@ -8,7 +8,7 @@ import { parseCardUrl, findTrack } from './cards.js';
 import { startFx } from './fx.js';
 import { unlockAudio, tick, JINGLES, buzzer, fanfare } from './sounds.js';
 import * as spotify from './spotify.js';
-import { scanQr, keepAwake, buzz, openUrl, isNative } from './native.js';
+import { scanQr, keepAwake, buzz, openExternal, isNative } from './native.js';
 
 const $ = (id) => document.getElementById(id);
 const SCREENS = ['menu', 'ready', 'roulette', 'picked', 'play', 'timeup', 'end'];
@@ -81,29 +81,36 @@ async function loadCards() {
   return cardList;
 }
 
+// Al escanear: si la carta está en la lista propia, suena en Spotify desde aquí.
+// Si no, se abre la app oficial de Hitster con el enlace de la carta, y la ronda empieza al volver.
+let waitingReturn = false;
 $('toScan').onclick = async () => {
   clearMsg();
-  if (!spotify.isLoggedIn()) { alertMsg('Primero entra a Spotify desde el menú (botón «Cambiar lado»).'); return; }
   let text;
   try { text = await scanQr(); } catch (e) { if (!/cancel/i.test(e.message)) alertMsg(e.message); return; }
   if (!text) return;
   const card = parseCardUrl(text);
   if (!card) { alertMsg('Ese QR no es de una carta de Hitster.'); return; }
   lastCardUrl = text.trim();
-  const track = findTrack(await loadCards(), card);
-  if (!track) {
-    alertMsg(`La carta ${card.card} (edición ${card.edition}) no está en la lista de canciones de la app.`);
-    $('msgActions').hidden = false; $('openHitster').hidden = false;
-    return;
+  const track = spotify.isLoggedIn() ? findTrack(await loadCards(), card) : null;
+  if (track) {
+    try { await spotify.playTrack(track); startRound(); return; }
+    catch (e) {
+      if (e instanceof spotify.NoDeviceError) { alertMsg(e.message); $('msgActions').hidden = false; $('openSpotify').hidden = false; return; }
+    }
   }
-  try { await spotify.playTrack(track); startRound(); }
-  catch (e) {
-    alertMsg(e.message);
-    if (e instanceof spotify.NoDeviceError) { $('msgActions').hidden = false; $('openSpotify').hidden = false; }
-  }
+  await openInHitster();
 };
+async function openInHitster() {
+  alertMsg('Abriendo la canción en la app de Hitster… Vuelve aquí cuando empiece a sonar.');
+  waitingReturn = true;
+  try { await openExternal(lastCardUrl); } catch { waitingReturn = false; alertMsg('No se pudo abrir la app de Hitster.'); $('msgActions').hidden = false; $('openHitster').hidden = false; }
+}
 $('openSpotify').onclick = () => spotify.openSpotifyApp();
-$('openHitster').onclick = async () => { if (lastCardUrl) { await openUrl(lastCardUrl); startRound(); } };
+$('openHitster').onclick = () => openInHitster();
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && waitingReturn) { waitingReturn = false; startRound(); }
+});
 
 let t0 = 0, colorT = 0;
 function startRound() { clearMsg(); $('plCat').textContent = SIDES[side].cats[current]; show('play'); t0 = performance.now(); colorT = 0; mode = 'play'; loop(); }
@@ -120,7 +127,7 @@ function loop(now = performance.now()) {
 function stopRound() { mode = 'idle'; cancelAnimationFrame(raf); }
 function timeUp() {
   stopRound(); fx.setRate(0); fx.clear(); wash('var(--red)'); show('timeup');
-  buzzer(); buzz(); spotify.pause();
+  buzzer(); buzz(); if (spotify.isLoggedIn()) spotify.pause();
 }
 $('next').onclick = () => { unlockAudio(); toReady(); };
 $('bingo').onclick = () => { show('end'); wash('var(--bg)'); fx.setRate(25); fanfare(); setTimeout(() => fx.setRate(4), 2500); };

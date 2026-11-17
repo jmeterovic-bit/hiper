@@ -14,12 +14,12 @@
 | Spotify | Web API con PKCE (Client ID en `src/config.js`, redirect `bingovinilo://callback`) | Suena mientras la app sigue en pantalla. Jose tiene Premium. |
 | Token | Se renueva solo; si vence (180 días), la app muestra «Entrar a Spotify» | Límite de Spotify, no se puede quitar. |
 | QR | `scan()` de Google Code Scanner | No pide permiso de cámara y es estable. |
-| Lista carta → canción | `public/cartas.json` con `{ "<edición>": { "<número 5 dígitos>": "<id Spotify>" } }` | Pendiente de la fuente (Jose decide). Si falta la carta, botón para abrirla en la app de Hitster. |
+| Canción de cada carta | Al escanear se abre el enlace de la carta con Android y lo toma la app oficial de Hitster, que la pone en Spotify. La ronda de 25 s empieza al volver a esta app. `public/cartas.json` (vacío) queda como opción para tocarla desde aquí. | Jose eligió esta opción (2026-11-17): la lista de Jumbo no se pudo leer y la comunitaria no cubre su edición. |
 | Sonidos | Web Audio generado, sin archivos | Sin licencias y liviano. |
 | Fuentes | Bungee e Inter empaquetadas (@fontsource, licencia OFL) | Funciona sin internet. |
 
 ## Pendiente
-- Fuente de la lista de canciones (edición Latino que Jose está comprando).
+- Probar que la app de Hitster toma el enlace de la carta (edición Latino que Jose está comprando).
 - Probar en el teléfono el inicio de sesión de Spotify y el lector de QR.
 
 ## Rechazado
@@ -28,4 +28,5 @@
 ## Bitácora
 | Fecha | Versión | Cambio |
 |---|---|---|
+| 2026-11-17 | 0.2.0 | Al escanear se abre la carta en la app oficial de Hitster; la ronda empieza al volver. Spotify ya no es obligatorio (sirve para pausar al «¡Tiempo!»). |
 | 2026-11-17 | 0.1.0 | Primera versión: menú A/B, ruleta, escaneo, Spotify, ronda de 25 s, «¡Tiempo!» y «¡Bingo!». |
