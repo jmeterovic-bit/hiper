@@ -29,6 +29,7 @@ export async function buzz() {
 // Abre el enlace con Android (ACTION_VIEW): si la app de Hitster está instalada, lo toma ella.
 export async function openExternal(url) {
   if (!isNative) { window.open(url, '_blank'); return; }
-  const { completed } = await AppLauncher.openUrl({ url });
+  // Las apps suelen declarar sus enlaces con https; el QR trae http.
+  const { completed } = await AppLauncher.openUrl({ url: url.replace(/^http:\/\//i, 'https://') });
   if (!completed) throw new Error('no se abrió');
 }

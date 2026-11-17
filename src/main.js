@@ -45,7 +45,7 @@ $('spotifyBtn').onclick = async () => {
 refreshSpotify();
 
 function alertMsg(text) { $('msg').textContent = text; $('msg').hidden = false; }
-function clearMsg() { $('msg').hidden = true; $('msgActions').hidden = true; $('openSpotify').hidden = true; $('openHitster').hidden = true; }
+function clearMsg() { $('msg').hidden = true; $('msgActions').hidden = true; ['openSpotify', 'openHitster', 'startManual'].forEach((id) => ($(id).hidden = true)); }
 
 document.querySelectorAll('.side').forEach((b) => b.addEventListener('click', () => {
   side = b.dataset.side;
@@ -83,7 +83,11 @@ async function loadCards() {
 
 // Al escanear: si la carta está en la lista propia, suena en Spotify desde aquí.
 // Si no, se abre la app oficial de Hitster con el enlace de la carta, y la ronda empieza al volver.
-let waitingReturn = false;
+// handoff: 'idle' | 'opening' (se pidió abrir Hitster) | 'away' (la app quedó en segundo plano).
+let handoff = 'idle', handoffTimer = 0;
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+async function untilVisible() { for (let i = 0; i < 40 && document.hidden; i++) await sleep(50); }
+
 $('toScan').onclick = async () => {
   clearMsg();
   let text;
@@ -99,17 +103,32 @@ $('toScan').onclick = async () => {
       if (e instanceof spotify.NoDeviceError) { alertMsg(e.message); $('msgActions').hidden = false; $('openSpotify').hidden = false; return; }
     }
   }
+  // Esperar a que el escáner termine de cerrarse antes de abrir otra app.
+  await untilVisible();
+  await sleep(300);
   await openInHitster();
 };
+
 async function openInHitster() {
+  clearMsg();
   alertMsg('Abriendo la canción en la app de Hitster… Vuelve aquí cuando empiece a sonar.');
-  waitingReturn = true;
-  try { await openExternal(lastCardUrl); } catch { waitingReturn = false; alertMsg('No se pudo abrir la app de Hitster.'); $('msgActions').hidden = false; $('openHitster').hidden = false; }
+  handoff = 'opening';
+  try { await openExternal(lastCardUrl); } catch {}
+  clearTimeout(handoffTimer);
+  // Si en 3 s la app no pasó a segundo plano, el enlace no abrió nada.
+  handoffTimer = setTimeout(() => {
+    if (handoff !== 'opening') return;
+    handoff = 'idle';
+    alertMsg('No se abrió la app de Hitster. Prueba otra vez, o pon la canción a mano y toca «Empezar ronda».');
+    $('msgActions').hidden = false; $('openHitster').hidden = false; $('startManual').hidden = false;
+  }, 3000);
 }
 $('openSpotify').onclick = () => spotify.openSpotifyApp();
 $('openHitster').onclick = () => openInHitster();
+$('startManual').onclick = () => startRound();
 document.addEventListener('visibilitychange', () => {
-  if (!document.hidden && waitingReturn) { waitingReturn = false; startRound(); }
+  if (document.hidden && handoff === 'opening') handoff = 'away';
+  else if (!document.hidden && handoff === 'away') { handoff = 'idle'; clearTimeout(handoffTimer); startRound(); }
 });
 
 let t0 = 0, colorT = 0;
