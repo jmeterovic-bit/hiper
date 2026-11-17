@@ -16,3 +16,10 @@ export function findTrack(list, card) {
   const clean = String(id).replace(/^spotify:track:/, '').replace(/^https?:\/\/open\.spotify\.com\/track\//, '').split('?')[0];
   return /^[A-Za-z0-9]{22}$/.test(clean) ? clean : null;
 }
+
+// Enlace limpio para abrir con Android: https y dominio en minúsculas (los QR suelen venir en MAYÚSCULAS,
+// y Android distingue mayúsculas en el esquema y el dominio).
+export function cardLink(card) {
+  const ed = card.edition !== card.lang ? card.edition + '/' : '';
+  return `https://www.hitstergame.com/${card.lang}/${ed}${card.card}`;
+}

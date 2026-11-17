@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseCardUrl, findTrack } from '../src/cards.js';
+import { parseCardUrl, findTrack, cardLink } from '../src/cards.js';
 
 describe('parseCardUrl', () => {
   it('lee el QR con edición', () => {
@@ -23,5 +23,12 @@ describe('findTrack', () => {
     expect(findTrack(list, { edition: 'aaab0001', card: '00999' })).toBeNull();
     expect(findTrack(list, { edition: 'aaab0001', card: '00212' })).toBeNull();
     expect(findTrack({}, { edition: 'x', card: '1' })).toBeNull();
+  });
+});
+
+describe('cardLink', () => {
+  it('arma el enlace en minúsculas y con https', () => {
+    expect(cardLink(parseCardUrl('HTTP://WWW.HITSTERGAME.COM/US/AAAB0001/00211'))).toBe('https://www.hitstergame.com/us/aaab0001/00211');
+    expect(cardLink(parseCardUrl('http://www.hitstergame.com/de/00268'))).toBe('https://www.hitstergame.com/de/00268');
   });
 });

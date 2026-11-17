@@ -1,5 +1,8 @@
 # Cambios
 
+## 0.2.3 (2026-11-17)
+- Arreglo: el enlace de la carta se arma limpio (https, minúsculas) para que Android lo pueda abrir.
+
 ## 0.2.2 (2026-11-17)
 - Nueva forma de abrir la carta en la app de Hitster. Si no se abre, el aviso dice qué apps del teléfono aceptan el enlace.
 

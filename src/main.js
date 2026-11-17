@@ -4,7 +4,7 @@ import '@fontsource/inter/600.css';
 import '@fontsource/inter/800.css';
 import { COLORS, SIDES, ROUND_MS } from './config.js';
 import { rouletteSteps } from './roulette.js';
-import { parseCardUrl, findTrack } from './cards.js';
+import { parseCardUrl, findTrack, cardLink } from './cards.js';
 import { startFx } from './fx.js';
 import { unlockAudio, tick, JINGLES, buzzer, fanfare } from './sounds.js';
 import * as spotify from './spotify.js';
@@ -95,7 +95,7 @@ $('toScan').onclick = async () => {
   if (!text) return;
   const card = parseCardUrl(text);
   if (!card) { alertMsg('Ese QR no es de una carta de Hitster.'); return; }
-  lastCardUrl = text.trim();
+  lastCardUrl = cardLink(card);
   const track = spotify.isLoggedIn() ? findTrack(await loadCards(), card) : null;
   if (track) {
     try { await spotify.playTrack(track); startRound(); return; }
@@ -119,7 +119,7 @@ async function openInHitster() {
   handoffTimer = setTimeout(() => {
     if (handoff !== 'opening') return;
     handoff = 'idle';
-    const info = lastOpen ? ` (apps: ${(lastOpen.apps || []).join(', ') || 'ninguna'}${lastOpen.error ? '; ' + lastOpen.error : ''})` : '';
+    const info = lastOpen ? ` (apps: ${(lastOpen.apps || []).join(', ') || 'ninguna'}${lastOpen.error ? '; ' + lastOpen.error : ''}; ${lastCardUrl})` : '';
     alertMsg('No se abrió la app de Hitster. Prueba otra vez, o pon la canción a mano y toca «Empezar ronda».' + info);
     $('msgActions').hidden = false; $('openHitster').hidden = false; $('startManual').hidden = false;
   }, 3000);

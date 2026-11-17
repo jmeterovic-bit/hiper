@@ -30,6 +30,5 @@ export async function buzz() {
 const Abrir = registerPlugin('Abrir');
 export async function openExternal(url) {
   if (!isNative) { window.open(url, '_blank'); return { abierto: true, apps: [] }; }
-  // Las apps suelen declarar sus enlaces con https; el QR trae http.
-  return Abrir.enlace({ url: url.replace(/^http:\/\//i, 'https://') });
+  return Abrir.enlace({ url });
 }

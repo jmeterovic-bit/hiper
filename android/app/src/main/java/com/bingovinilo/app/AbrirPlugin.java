@@ -35,7 +35,13 @@ public class AbrirPlugin extends Plugin {
         JSObject ret = new JSObject();
         ret.put("apps", apps);
         try {
-            getContext().startActivity(intent);
+            try {
+                getContext().startActivity(intent);
+            } catch (ActivityNotFoundException e) {
+                // Segundo intento sin la categoría BROWSABLE.
+                intent.removeCategory(Intent.CATEGORY_BROWSABLE);
+                getContext().startActivity(intent);
+            }
             ret.put("abierto", true);
         } catch (ActivityNotFoundException e) {
             ret.put("abierto", false);
