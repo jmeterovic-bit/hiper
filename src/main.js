@@ -146,7 +146,9 @@ function loop(now = performance.now()) {
 }
 function stopRound() { mode = 'idle'; cancelAnimationFrame(raf); }
 function timeUp() {
-  stopRound(); fx.setRate(0); fx.clear(); wash('var(--red)'); show('timeup');
+  stopRound(); fx.setRate(0); fx.clear(); wash('var(--red)');
+  $('tCat').style.background = COLORS[current]; setCat(current, $('tCatName'), $('tDice'));
+  show('timeup');
   buzzer(); buzz(); if (spotify.isLoggedIn()) spotify.pause();
 }
 $('next').onclick = () => { unlockAudio(); toReady(); };

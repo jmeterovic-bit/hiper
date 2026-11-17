@@ -1,5 +1,8 @@
 # Cambios
 
+## 0.2.4 (2026-11-17)
+- La pantalla «¡Tiempo!» muestra la categoría que se estaba jugando.
+
 ## 0.2.3 (2026-11-17)
 - Arreglo: el enlace de la carta se arma limpio (https, minúsculas) para que Android lo pueda abrir.
 
