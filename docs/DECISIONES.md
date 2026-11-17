@@ -28,6 +28,7 @@
 ## Bitácora
 | Fecha | Versión | Cambio |
 |---|---|---|
+| 2026-11-17 | 0.3.1 | Ícono: el disco de vinilo de la app (surcos, etiqueta rosa) sobre fondo #15131F, pedido de Jose. |
 | 2026-11-17 | 0.3.0 | El botón abre la app de Hitster para escanear ahí (la app de Hitster no acepta el enlace de la carta). |
 | 2026-11-17 | 0.2.4 | La pantalla «¡Tiempo!» muestra la categoría de la ronda (color, dado y nombre), pedido de Jose. |
 | 2026-11-17 | 0.2.3 | Ninguna app aceptaba el enlace: se rearma el enlace de la carta en minúsculas y con https (`cardLink`), porque los QR pueden venir en mayúsculas. Segundo intento sin BROWSABLE. El aviso muestra el enlace usado. |

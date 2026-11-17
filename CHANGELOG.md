@@ -1,5 +1,8 @@
 # Cambios
 
+## 0.3.1 (2026-11-17)
+- Ícono nuevo: el disco de vinilo.
+
 ## 0.3.0 (2026-11-17)
 - «Escanear en Hitster» abre la app de Hitster: escaneas la carta ahí, suena, y al volver empieza la ronda de 25 s.
 
