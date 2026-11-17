@@ -32,3 +32,9 @@ export async function openExternal(url) {
   if (!isNative) { window.open(url, '_blank'); return { abierto: true, apps: [] }; }
   return Abrir.enlace({ url });
 }
+
+// Abre la app oficial de Hitster. Devuelve { abierto, paquete }.
+export async function openHitsterApp() {
+  if (!isNative) return { abierto: false, paquete: null };
+  return Abrir.hitster();
+}

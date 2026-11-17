@@ -52,4 +52,32 @@ public class AbrirPlugin extends Plugin {
         }
         call.resolve(ret);
     }
+
+    // Abre la app de Hitster (la busca entre las apps del inicio por su nombre o paquete).
+    @PluginMethod
+    public void hitster(PluginCall call) {
+        PackageManager pm = getContext().getPackageManager();
+        Intent main = new Intent(Intent.ACTION_MAIN);
+        main.addCategory(Intent.CATEGORY_LAUNCHER);
+        String found = null;
+        for (ResolveInfo ri : pm.queryIntentActivities(main, 0)) {
+            String pkg = ri.activityInfo.packageName;
+            String label = String.valueOf(ri.loadLabel(pm));
+            if (pkg.toLowerCase().contains("hitster") || label.toLowerCase().contains("hitster")) { found = pkg; break; }
+        }
+        JSObject ret = new JSObject();
+        ret.put("paquete", found);
+        if (found == null) { ret.put("abierto", false); call.resolve(ret); return; }
+        Intent launch = pm.getLaunchIntentForPackage(found);
+        if (launch == null) { ret.put("abierto", false); call.resolve(ret); return; }
+        launch.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        try {
+            getContext().startActivity(launch);
+            ret.put("abierto", true);
+        } catch (Exception e) {
+            ret.put("abierto", false);
+            ret.put("error", e.getMessage());
+        }
+        call.resolve(ret);
+    }
 }

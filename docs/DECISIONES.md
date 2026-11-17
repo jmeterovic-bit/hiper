@@ -14,20 +14,21 @@
 | Spotify | Web API con PKCE (Client ID en `src/config.js`, redirect `bingovinilo://callback`) | Suena mientras la app sigue en pantalla. Jose tiene Premium. |
 | Token | Se renueva solo; si vence (180 días), la app muestra «Entrar a Spotify» | Límite de Spotify, no se puede quitar. |
 | QR | `scan()` de Google Code Scanner | No pide permiso de cámara y es estable. |
-| Canción de cada carta | Al escanear se abre el enlace de la carta con Android y lo toma la app oficial de Hitster, que la pone en Spotify. La ronda de 25 s empieza al volver a esta app. `public/cartas.json` (vacío) queda como opción para tocarla desde aquí. | Jose eligió esta opción (2026-11-17): la lista de Jumbo no se pudo leer y la comunitaria no cubre su edición. |
+| Canción de cada carta | «Escanear en Hitster» abre la app oficial de Hitster (se busca por nombre entre las apps del inicio); ahí se escanea y suena. La ronda de 25 s empieza al volver. El escáner propio + `public/cartas.json` quedan en el código (`scanHere`) para cuando haya lista de canciones. | Jose eligió abrir la app de Hitster (2026-11-17). Pasarle el enlace de la carta no sirve: la app de Hitster no acepta enlaces externos y se abre su web (probado 0.2.4). |
 | Sonidos | Web Audio generado, sin archivos | Sin licencias y liviano. |
 | Fuentes | Bungee e Inter empaquetadas (@fontsource, licencia OFL) | Funciona sin internet. |
 
 ## Pendiente
-- Probar que la app de Hitster toma el enlace de la carta (edición Latino que Jose está comprando).
+- Una sola lectura de la carta (sin pasar por la app de Hitster) requiere la lista carta → canción de la edición Latino.
 - Probar en el teléfono el inicio de sesión de Spotify y el lector de QR.
 
 ## Rechazado
-(nada todavía)
+- Abrir el enlace de la carta para que lo tome la app de Hitster: Android lo manda a la web de hitstergame.com (2026-11-17).
 
 ## Bitácora
 | Fecha | Versión | Cambio |
 |---|---|---|
+| 2026-11-17 | 0.3.0 | El botón abre la app de Hitster para escanear ahí (la app de Hitster no acepta el enlace de la carta). |
 | 2026-11-17 | 0.2.4 | La pantalla «¡Tiempo!» muestra la categoría de la ronda (color, dado y nombre), pedido de Jose. |
 | 2026-11-17 | 0.2.3 | Ninguna app aceptaba el enlace: se rearma el enlace de la carta en minúsculas y con https (`cardLink`), porque los QR pueden venir en mayúsculas. Segundo intento sin BROWSABLE. El aviso muestra el enlace usado. |
 | 2026-11-17 | 0.2.2 | El enlace se abre con un plugin propio (`AbrirPlugin.java`, ACTION_VIEW + NEW_TASK) que además dice qué apps aceptan el enlace; si falla, el mensaje lo muestra para diagnosticar. |

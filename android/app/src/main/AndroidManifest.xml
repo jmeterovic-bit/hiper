@@ -50,6 +50,11 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <queries>
+        <!-- Para encontrar la app de Hitster entre las apps del inicio -->
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
         <!-- Para ver qué apps reciben el enlace de una carta (navegador, app de Hitster) -->
         <intent>
             <action android:name="android.intent.action.VIEW" />
