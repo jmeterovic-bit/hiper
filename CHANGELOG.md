@@ -1,5 +1,8 @@
 # Cambios
 
+## 0.2.2 (2026-11-17)
+- Nueva forma de abrir la carta en la app de Hitster. Si no se abre, el aviso dice qué apps del teléfono aceptan el enlace.
+
 ## 0.2.1 (2026-11-17)
 - Arreglo: el conteo empezaba solo al cerrar el escáner y no se abría la app de Hitster.
 - Si la app de Hitster no se abre, aparecen los botones «Abrir en la app de Hitster» y «Empezar ronda».

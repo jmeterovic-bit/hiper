@@ -28,6 +28,7 @@
 ## Bitácora
 | Fecha | Versión | Cambio |
 |---|---|---|
+| 2026-11-17 | 0.2.2 | El enlace se abre con un plugin propio (`AbrirPlugin.java`, ACTION_VIEW + NEW_TASK) que además dice qué apps aceptan el enlace; si falla, el mensaje lo muestra para diagnosticar. |
 | 2026-11-17 | 0.2.1 | El conteo arrancaba al cerrar el escáner sin abrir Hitster. Ahora se espera a que el escáner cierre, se abre el enlace con https, la ronda empieza solo si la app salió y volvió, y si en 3 s no se abrió nada aparecen «Abrir en la app de Hitster» y «Empezar ronda». |
 | 2026-11-17 | 0.2.0 | Al escanear se abre la carta en la app oficial de Hitster; la ronda empieza al volver. Spotify ya no es obligatorio (sirve para pausar al «¡Tiempo!»). |
 | 2026-11-17 | 0.1.0 | Primera versión: menú A/B, ruleta, escaneo, Spotify, ronda de 25 s, «¡Tiempo!» y «¡Bingo!». |

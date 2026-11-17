@@ -1,9 +1,8 @@
 // Cámara (lector de QR de Google, sin pedir permiso de cámara), pantalla encendida y vibración.
-import { Capacitor } from '@capacitor/core';
+import { Capacitor, registerPlugin } from '@capacitor/core';
 import { BarcodeScanner, BarcodeFormat } from '@capacitor-mlkit/barcode-scanning';
 import { KeepAwake } from '@capacitor-community/keep-awake';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
-import { AppLauncher } from '@capacitor/app-launcher';
 
 export const isNative = Capacitor.isNativePlatform();
 
@@ -26,10 +25,11 @@ export async function buzz() {
   try { await Haptics.impact({ style: ImpactStyle.Heavy }); } catch {}
 }
 
-// Abre el enlace con Android (ACTION_VIEW): si la app de Hitster está instalada, lo toma ella.
+// Abre el enlace con Android (ACTION_VIEW) con un plugin propio (android/.../AbrirPlugin.java).
+// Devuelve { abierto, apps: [paquetes que lo aceptan], error }.
+const Abrir = registerPlugin('Abrir');
 export async function openExternal(url) {
-  if (!isNative) { window.open(url, '_blank'); return; }
+  if (!isNative) { window.open(url, '_blank'); return { abierto: true, apps: [] }; }
   // Las apps suelen declarar sus enlaces con https; el QR trae http.
-  const { completed } = await AppLauncher.openUrl({ url: url.replace(/^http:\/\//i, 'https://') });
-  if (!completed) throw new Error('no se abrió');
+  return Abrir.enlace({ url: url.replace(/^http:\/\//i, 'https://') });
 }

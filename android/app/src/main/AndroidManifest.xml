@@ -50,6 +50,17 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <queries>
+        <!-- Para ver qué apps reciben el enlace de una carta (navegador, app de Hitster) -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="https" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="http" />
+        </intent>
         <intent>
             <action android:name="android.intent.action.VIEW" />
             <data android:scheme="spotify" />

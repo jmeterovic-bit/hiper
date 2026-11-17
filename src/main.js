@@ -84,7 +84,7 @@ async function loadCards() {
 // Al escanear: si la carta está en la lista propia, suena en Spotify desde aquí.
 // Si no, se abre la app oficial de Hitster con el enlace de la carta, y la ronda empieza al volver.
 // handoff: 'idle' | 'opening' (se pidió abrir Hitster) | 'away' (la app quedó en segundo plano).
-let handoff = 'idle', handoffTimer = 0;
+let handoff = 'idle', handoffTimer = 0, lastOpen = null;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 async function untilVisible() { for (let i = 0; i < 40 && document.hidden; i++) await sleep(50); }
 
@@ -113,13 +113,14 @@ async function openInHitster() {
   clearMsg();
   alertMsg('Abriendo la canción en la app de Hitster… Vuelve aquí cuando empiece a sonar.');
   handoff = 'opening';
-  try { await openExternal(lastCardUrl); } catch {}
+  try { lastOpen = await openExternal(lastCardUrl); } catch (e) { lastOpen = { abierto: false, apps: [], error: e.message }; }
   clearTimeout(handoffTimer);
   // Si en 3 s la app no pasó a segundo plano, el enlace no abrió nada.
   handoffTimer = setTimeout(() => {
     if (handoff !== 'opening') return;
     handoff = 'idle';
-    alertMsg('No se abrió la app de Hitster. Prueba otra vez, o pon la canción a mano y toca «Empezar ronda».');
+    const info = lastOpen ? ` (apps: ${(lastOpen.apps || []).join(', ') || 'ninguna'}${lastOpen.error ? '; ' + lastOpen.error : ''})` : '';
+    alertMsg('No se abrió la app de Hitster. Prueba otra vez, o pon la canción a mano y toca «Empezar ronda».' + info);
     $('msgActions').hidden = false; $('openHitster').hidden = false; $('startManual').hidden = false;
   }, 3000);
 }
