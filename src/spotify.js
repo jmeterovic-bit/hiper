@@ -4,7 +4,7 @@ import { App } from '@capacitor/app';
 import { Browser } from '@capacitor/browser';
 import { AppLauncher } from '@capacitor/app-launcher';
 import { SPOTIFY_CLIENT_ID, REDIRECT_URI, SCOPES } from './config.js';
-import { randomVerifier, challengeFor, authorizeUrl, parseCallback, pickDevice } from './spotify-core.js';
+import { randomVerifier, challengeFor, authorizeUrl, parseCallback, pickDevice, isPlayingTrack } from './spotify-core.js';
 
 const KEY = 'spotify.tokens';
 const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || null; } catch { return null; } };
@@ -70,11 +70,27 @@ async function api(path, { method = 'GET', body } = {}) {
 
 export class NoDeviceError extends Error {}
 
-export async function playTrack(trackId) {
+export async function listDevices() {
   const { devices } = await api('/me/player/devices');
-  const dev = pickDevice(devices);
+  return (devices || []).filter((d) => d && d.id && !d.is_restricted);
+}
+
+// Pone la canción en el aparato elegido (o el mejor disponible). Devuelve el aparato usado.
+export async function playTrack(trackId, preferredId = null) {
+  const dev = pickDevice(await listDevices(), preferredId);
   if (!dev) throw new NoDeviceError('Spotify está cerrado. Ábrelo un momento y vuelve.');
   await api('/me/player/play?device_id=' + encodeURIComponent(dev.id), { method: 'PUT', body: { uris: ['spotify:track:' + trackId], position_ms: 0 } });
+  return dev;
+}
+
+// Espera hasta que la canción de verdad esté sonando (máximo `timeout` ms). Devuelve true si sonó.
+export async function waitUntilPlaying(trackId, timeout = 12000) {
+  const end = Date.now() + timeout;
+  while (Date.now() < end) {
+    try { if (isPlayingTrack(await api('/me/player'), trackId)) return true; } catch {}
+    await new Promise((r) => setTimeout(r, 400));
+  }
+  return false;
 }
 
 export async function pause() {

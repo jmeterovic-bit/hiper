@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { base64url, challengeFor, authorizeUrl, parseCallback, pickDevice } from '../src/spotify-core.js';
+import { base64url, challengeFor, authorizeUrl, parseCallback, pickDevice, isPlayingTrack } from '../src/spotify-core.js';
 import { rouletteSteps } from '../src/roulette.js';
 
 describe('PKCE', () => {
@@ -21,10 +21,19 @@ describe('PKCE', () => {
 });
 
 describe('pickDevice', () => {
-  it('prefiere el activo, luego el teléfono', () => {
-    expect(pickDevice([{ id: '1', type: 'Computer' }, { id: '2', type: 'Smartphone' }]).id).toBe('2');
-    expect(pickDevice([{ id: '1', type: 'Computer', is_active: true }, { id: '2', type: 'Smartphone' }]).id).toBe('1');
+  it('prefiere el elegido, luego el teléfono, luego el activo', () => {
+    const devs = [{ id: '1', type: 'Computer', is_active: true }, { id: '2', type: 'Smartphone' }, { id: '3', type: 'Speaker' }];
+    expect(pickDevice(devs, '3').id).toBe('3');
+    expect(pickDevice(devs).id).toBe('2');
+    expect(pickDevice(devs, 'no-existe').id).toBe('2');
+    expect(pickDevice([{ id: '1', type: 'Computer', is_active: true }]).id).toBe('1');
     expect(pickDevice([])).toBeNull();
+  });
+  it('sabe cuándo la canción ya suena', () => {
+    expect(isPlayingTrack({ is_playing: true, item: { id: 'a' }, progress_ms: 900 }, 'a')).toBe(true);
+    expect(isPlayingTrack({ is_playing: true, item: { id: 'b' }, progress_ms: 900 }, 'a')).toBe(false);
+    expect(isPlayingTrack({ is_playing: true, item: { id: 'a' }, progress_ms: 0 }, 'a')).toBe(false);
+    expect(isPlayingTrack(null, 'a')).toBe(false);
   });
 });
 

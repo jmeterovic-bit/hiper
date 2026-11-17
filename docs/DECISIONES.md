@@ -12,6 +12,9 @@
 |---|---|---|
 | Plataforma | Capacitor + Vite, como Rutina Gym | Jose ya usa ese flujo y el APK lo compila GitHub. |
 | Spotify | Web API con PKCE (Client ID en `src/config.js`, redirect `bingovinilo://callback`) | Suena mientras la app sigue en pantalla. Jose tiene Premium. |
+| Aparato de Spotify | Ajuste «Suena en» en el menú (lista de `/me/player/devices`, guardado en el teléfono). Sin elección: el teléfono antes que el aparato activo. | Sonaba en la PC de Jose (era el aparato activo). |
+| Inicio de la ronda | La cuenta de 25 s empieza cuando `/me/player` dice que la canción ya suena (máx. 12 s de espera). | Spotify tarda unos segundos en empezar (Jose, 2026-11-17). |
+| Escuchar | Ajuste «Fragmento» (se pausa al «¡Tiempo!») o «Completa» (sigue sonando; se pausa al terminar la partida). | Como la app oficial, pedido de Jose. |
 | Token | Se renueva solo; si vence (180 días), la app muestra «Entrar a Spotify» | Límite de Spotify, no se puede quitar. |
 | QR | `scan()` de Google Code Scanner | No pide permiso de cámara y es estable. |
 | Canción de cada carta | Con Spotify conectado: escáner propio + lista de Jumbo (`gameset_database.json`, la misma de la app oficial; `{gamesets:[{sku, gameset_data:{cards:[{CardNumber, Spotify}]}}]}`), descargada en el teléfono y guardada en IndexedDB 7 días. Sin Spotify o carta fuera de la lista: botón para escanear en la app de Hitster (la ronda empieza al volver). | Jose eligió la lista de Jumbo (2026-11-17) tras ver que abrir la app de Hitster obliga a escanear dos veces. La lista trae las ediciones Latino (p. ej. aaab0004, aaaa0053, aaaa0102). No se guarda una copia en el repo. |
@@ -28,6 +31,7 @@
 ## Bitácora
 | Fecha | Versión | Cambio |
 |---|---|---|
+| 2026-11-17 | 0.5.0 | Elegir aparato de Spotify, la cuenta espera a que suene la canción, opción Fragmento/Completa. |
 | 2026-11-17 | 0.4.0 | Escaneo propio con la lista de Hitster y canción en Spotify sin salir de la app. La app de Hitster queda como respaldo. |
 | 2026-11-17 | 0.3.1 | Ícono: el disco de vinilo de la app (surcos, etiqueta rosa) sobre fondo #15131F, pedido de Jose. |
 | 2026-11-17 | 0.3.0 | El botón abre la app de Hitster para escanear ahí (la app de Hitster no acepta el enlace de la carta). |

@@ -39,8 +39,14 @@ export function parseCallback(url) {
   }
 }
 
-// Elige dónde sonar: el aparato activo; si no hay, el teléfono; si no, el primero.
-export function pickDevice(devices) {
+// Elige dónde sonar: el aparato que eligió Jose; si no está, el teléfono; si no, el activo; si no, el primero.
+export function pickDevice(devices, preferredId = null) {
   const list = (devices || []).filter((d) => d && d.id && !d.is_restricted);
-  return list.find((d) => d.is_active) || list.find((d) => d.type === 'Smartphone') || list[0] || null;
+  return (preferredId && list.find((d) => d.id === preferredId)) ||
+    list.find((d) => d.type === 'Smartphone') || list.find((d) => d.is_active) || list[0] || null;
+}
+
+// ¿Ya está sonando esa canción? (respuesta de GET /me/player)
+export function isPlayingTrack(state, trackId) {
+  return !!(state && state.is_playing && state.item && state.item.id === trackId && state.progress_ms > 200);
 }

@@ -1,5 +1,10 @@
 # Cambios
 
+## 0.5.0 (2026-11-17)
+- En el menú: «Suena en» para elegir dónde suena Spotify (por defecto, el teléfono).
+- La cuenta regresiva empieza cuando la canción ya está sonando.
+- En el menú: «Escuchar» Fragmento (se pausa al «¡Tiempo!») o Completa (sigue sonando).
+
 ## 0.4.0 (2026-11-17)
 - Con Spotify conectado, «Escanear tarjeta» lee la carta aquí y la canción suena en Spotify sin salir de la app. La lista de canciones de Hitster se descarga sola.
 - Si la carta no está en la lista o no entraste a Spotify, puedes escanearla en la app de Hitster.

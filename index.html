@@ -20,7 +20,21 @@
     <button class="side" data-side="B"><span><b>Lado B</b><small>EXPERTO</small></span><span class="chips" id="chipsB"></span></button>
   </div>
   <button class="spotify" id="spotifyBtn"></button>
+  <div class="settings" id="settings" hidden>
+    <button class="set-row" id="deviceBtn"><span>Suena en</span><b id="deviceName">Elegir aparato</b></button>
+    <div class="set-row" role="group" aria-label="Escuchar">
+      <span>Escuchar</span>
+      <span class="seg"><button data-listen="fragmento">Fragmento</button><button data-listen="completa">Completa</button></span>
+    </div>
+  </div>
   <p class="version" id="version"></p>
+</section>
+
+<section class="screen" id="devices" hidden>
+  <h2 class="dtitle">¿Dónde suena la música?</h2>
+  <p class="sub">Si tu aparato no aparece, abre Spotify en él y toca «Actualizar».</p>
+  <div class="devlist" id="devList"></div>
+  <div class="row"><button class="btn ghost" id="devRefresh">Actualizar</button><button class="btn" id="devBack">Listo</button></div>
 </section>
 
 <div class="top" id="topbar" hidden><span id="sideLabel"></span><button id="changeSide">Cambiar lado</button></div>
@@ -50,7 +64,7 @@
 <section class="screen" id="play" hidden>
   <div class="cat small" id="plCat"></div>
   <div class="disc spin" id="plDisc" aria-hidden="true"></div>
-  <p class="sub">¡A escuchar!</p>
+  <p class="sub" id="plSub">¡A escuchar!</p>
 </section>
 
 <section class="screen" id="timeup" hidden>

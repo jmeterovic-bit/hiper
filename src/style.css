@@ -63,3 +63,15 @@ body{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset
 .version{color:#ffffff55;font-size:11px;margin:0}
 .tcat{display:flex;align-items:center;gap:14px;padding:12px 20px 12px 12px;border-radius:20px;box-shadow:0 0 0 4px #fff;font-family:var(--display);font-size:clamp(20px,6.5vw,30px);color:#fff;max-width:100%;text-align:left}
 .tcat .dice{flex:none;width:46px;height:46px;padding:7px}
+.settings{display:grid;gap:8px;width:min(420px,100%)}
+.set-row{all:unset;box-sizing:border-box;display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--panel);border-radius:14px;padding:10px 14px;font-size:14px;color:var(--muted)}
+button.set-row{cursor:pointer}
+.set-row b{color:#fff;font-weight:600;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.seg{display:inline-flex;background:#0006;border-radius:10px;padding:3px}
+.seg button{all:unset;cursor:pointer;padding:6px 12px;border-radius:8px;color:var(--muted);font-weight:600;font-size:13px}
+.seg button.on{background:#fff;color:var(--bg)}
+.dtitle{font-family:var(--display);font-weight:400;font-size:clamp(22px,7vw,32px);margin:0}
+.devlist{display:grid;gap:10px;width:min(420px,100%)}
+.dev{all:unset;cursor:pointer;box-sizing:border-box;background:var(--panel);border-radius:14px;padding:14px 16px;text-align:left;display:flex;justify-content:space-between;gap:10px;border:2px solid transparent}
+.dev.on{border-color:var(--gold)}
+.dev small{color:var(--muted)}
