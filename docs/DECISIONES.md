@@ -26,6 +26,7 @@
 - Probar en el teléfono el inicio de sesión de Spotify y el lector de QR.
 
 ## Rechazado
+- Campo «Client ID» para que cada amigo use su propia app de Spotify (Jose, 2026-11-17): los amigos se agregan en User Management o usan el escaneo en la app de Hitster.
 - Abrir el enlace de la carta para que lo tome la app de Hitster: Android lo manda a la web de hitstergame.com (2026-11-17).
 
 ## Bitácora
