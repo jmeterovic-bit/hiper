@@ -31,6 +31,7 @@
 ## Bitácora
 | Fecha | Versión | Cambio |
 |---|---|---|
+| 2026-11-18 | 0.5.0 | El Release se publica solo al mezclar a `main`: si la versión de `package.json` no tiene Release, el workflow crea la etiqueta `v<versión>` y lo publica con el APK y las notas del CHANGELOG. Pedido de Jose. |
 | 2026-11-17 | 0.5.0 | Elegir aparato de Spotify, la cuenta espera a que suene la canción, opción Fragmento/Completa. |
 | 2026-11-17 | 0.4.0 | Escaneo propio con la lista de Hitster y canción en Spotify sin salir de la app. La app de Hitster queda como respaldo. |
 | 2026-11-17 | 0.3.1 | Ícono: el disco de vinilo de la app (surcos, etiqueta rosa) sobre fondo #15131F, pedido de Jose. |
