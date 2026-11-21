@@ -65,3 +65,22 @@ describe('matchTrack', () => {
     expect(matchTrack([{ id: '2', name: 'Persiana Americana', artists: [{ name: 'Otro' }] }], song)).toBeNull();
   });
 });
+
+import { adaptCats } from '../src/pool.js';
+describe('adaptCats', () => {
+  const A = ['Década', 'Grupo o solista', 'Año ±2', 'Año ±4', '¿Antes o después del 2000?'];
+  const B = ['Década', 'Artista', 'Título', 'Año exacto', 'Año ±3'];
+  const songs = (...ys) => ys.map((year) => ({ year }));
+  it('una sola década: mitades y año ±1', () => {
+    expect(adaptCats(A, songs(1981, 1987))).toEqual(['¿80-84 o 85-89?', 'Grupo o solista', 'Año ±2', 'Año ±4', 'Año ±1']);
+    expect(adaptCats(B, songs(2011))[0]).toBe('¿2010-14 o 2015-19?');
+    expect(adaptCats(A, songs(2003))[0]).toBe('¿2000-04 o 2005-09?');
+  });
+  it('varias décadas del mismo lado del 2000: corte en la década que mejor reparte', () => {
+    expect(adaptCats(A, songs(1981, 1985, 1992, 1995))[4]).toBe('¿Antes o después de 1990?');
+    expect(adaptCats(A, songs(1971, 1982, 1983, 1991))[4]).toBe('¿Antes o después de 1980?');
+  });
+  it('si cruzan el 2000 no cambia nada', () => {
+    expect(adaptCats(A, songs(1995, 2005))).toEqual(A);
+  });
+});

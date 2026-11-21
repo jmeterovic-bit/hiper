@@ -46,3 +46,32 @@ export function matchTrack(items, song) {
 }
 
 export const describeType = (t) => (t === 'g' ? 'Grupo' : 'Solista');
+
+// Con listas propias, algunas categorías pierden sentido según las canciones elegidas:
+// - Todas de una sola década: «Década» pasa a «¿80-84 o 85-89?» y «¿Antes o después del 2000?» a «Año ±1».
+// - Varias décadas, pero todas antes (o todas después) del 2000: la pregunta usa el cambio de década
+//   que mejor reparte las canciones (p. ej. «¿Antes o después de 1990?»; 1990 cuenta como «después»).
+// Los colores no cambian, así que las tarjetas impresas siguen sirviendo.
+const yy = (y) => (y < 2000 ? String(y).slice(2) : String(y));
+export function adaptCats(cats, pool) {
+  const out = [...cats];
+  if (!pool || !pool.length) return out;
+  const decades = [...new Set(pool.map((s) => decadeOf(s.year)))].sort((a, b) => a - b);
+  const iDec = cats.indexOf('Década');
+  const i2000 = cats.indexOf('¿Antes o después del 2000?');
+  if (decades.length === 1) {
+    const d = decades[0];
+    if (iDec >= 0) out[iDec] = `¿${yy(d)}-${String(d + 4).slice(2)} o ${yy(d + 5)}-${String(d + 9).slice(2)}?`;
+    if (i2000 >= 0) out[i2000] = 'Año ±1';
+    return out;
+  }
+  if (i2000 >= 0 && (pool.every((s) => s.year < 2000) || pool.every((s) => s.year >= 2000))) {
+    let best = decades[1], bestGap = Infinity;
+    for (const b of decades.slice(1)) {
+      const gap = Math.abs(pool.filter((s) => s.year < b).length * 2 - pool.length);
+      if (gap < bestGap) { best = b; bestGap = gap; }
+    }
+    out[i2000] = `¿Antes o después de ${best}?`;
+  }
+  return out;
+}

@@ -34,7 +34,7 @@
 ## Bitácora
 | Fecha | Versión | Cambio |
 |---|---|---|
-| 2026-11-20 | 0.7.0 | «Fragmento» empieza en un punto al azar (duración con `/tracks/{id}`; si falla, salta con `/me/player/seek` apenas suena). Letra de la respuesta se ajusta a títulos largos. Pedidos de Jose. |
+| 2026-11-20 | 0.7.0 | «Fragmento» empieza en un punto al azar (duración con `/tracks/{id}`; si falla, salta con `/me/player/seek` apenas suena). Letra de la respuesta se ajusta a títulos largos. Listas propias: categorías que pierden sentido según las décadas elegidas se reemplazan (`adaptCats`: una década → «¿80-84 o 85-89?» y «Año ±1»; todas de un lado del 2000 → «¿Antes o después de <década que mejor reparte>?»; el año del corte cuenta como «después»). Mismos colores: las tarjetas impresas sirven. Pedidos de Jose. |
 | 2026-11-20 | 0.6.1 | «Insufficient client scope» al poner canción en Listas propias: la búsqueda usaba `market=from_token`, que exige `user-read-private`. Se quita el parámetro (con el token, Spotify usa el país de la cuenta). |
 | 2026-11-20 | 0.6.0 | Modo «Listas propias»: 8 temas (328 canciones), mezclar todas o elegir temas y décadas, respuesta en pantalla al «¡Tiempo!». Pedido de Jose. |
 | 2026-11-18 | 0.5.0 | El Release se publica solo al mezclar a `main`: si la versión de `package.json` no tiene Release, el workflow crea la etiqueta `v<versión>` y lo publica con el APK y las notas del CHANGELOG. Pedido de Jose. |
