@@ -18,19 +18,23 @@
 | Token | Se renueva solo; si vence (180 días), la app muestra «Entrar a Spotify» | Límite de Spotify, no se puede quitar. |
 | QR | `scan()` de Google Code Scanner | No pide permiso de cámara y es estable. |
 | Canción de cada carta | Con Spotify conectado: escáner propio + lista de Jumbo (`gameset_database.json`, la misma de la app oficial; `{gamesets:[{sku, gameset_data:{cards:[{CardNumber, Spotify}]}}]}`), descargada en el teléfono y guardada en IndexedDB 7 días. Sin Spotify o carta fuera de la lista: botón para escanear en la app de Hitster (la ronda empieza al volver). | Jose eligió la lista de Jumbo (2026-11-17) tras ver que abrir la app de Hitster obliga a escanear dos veces. La lista trae las ediciones Latino (p. ej. aaab0004, aaaa0053, aaaa0102). No se guarda una copia en el repo. |
+| Modo «Listas propias» | Listas por tema en `src/listas.js` (título, artista, año original, grupo/solista). La app busca cada canción en Spotify al jugar (`/search`, se elige la versión del artista y se evita karaoke) y guarda el ID en el teléfono. Mezclar todas o elegir temas y décadas. La respuesta sale al «¡Tiempo!» con «Ver respuesta» (sola a los 6 s, para dar tiempo a anotar). No se repite hasta agotar la elección. | Pedido de Jose (2026-11-20): jugar sin cartas. Sin IDs escritos a mano: no se inventan enlaces. Los años los escribió Claude: revisarlos si alguno parece mal. |
 | Sonidos | Web Audio generado, sin archivos | Sin licencias y liviano. |
 | Fuentes | Bungee e Inter empaquetadas (@fontsource, licencia OFL) | Funciona sin internet. |
 
 ## Pendiente
+- Revisar en partidas reales los años de las listas propias y si Spotify encuentra todas las canciones.
 - Probar en el teléfono el escaneo propio con Spotify (edición Latino).
 - Probar en el teléfono el inicio de sesión de Spotify y el lector de QR.
 
 ## Rechazado
+- Campo «Client ID» para que cada amigo use su propia app de Spotify (Jose, 2026-11-17): los amigos se agregan en User Management o usan el escaneo en la app de Hitster.
 - Abrir el enlace de la carta para que lo tome la app de Hitster: Android lo manda a la web de hitstergame.com (2026-11-17).
 
 ## Bitácora
 | Fecha | Versión | Cambio |
 |---|---|---|
+| 2026-11-20 | 0.6.0 | Modo «Listas propias»: 8 temas (328 canciones), mezclar todas o elegir temas y décadas, respuesta en pantalla al «¡Tiempo!». Pedido de Jose. |
 | 2026-11-18 | 0.5.0 | El Release se publica solo al mezclar a `main`: si la versión de `package.json` no tiene Release, el workflow crea la etiqueta `v<versión>` y lo publica con el APK y las notas del CHANGELOG. Pedido de Jose. |
 | 2026-11-17 | 0.5.0 | Elegir aparato de Spotify, la cuenta espera a que suene la canción, opción Fragmento/Completa. |
 | 2026-11-17 | 0.4.0 | Escaneo propio con la lista de Hitster y canción en Spotify sin salir de la app. La app de Hitster queda como respaldo. |

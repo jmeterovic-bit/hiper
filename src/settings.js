@@ -1,6 +1,6 @@
-// Ajustes del teléfono (solo en este aparato): dónde suena y cuánto se escucha.
+// Ajustes del teléfono (solo en este aparato): dónde suena, cuánto se escucha, modo de juego y listas elegidas.
 const KEY = 'ajustes';
-const DEFAULTS = { deviceId: null, deviceName: null, listen: 'fragmento' };
+const DEFAULTS = { deviceId: null, deviceName: null, listen: 'fragmento', mode: 'hitster', choice: { mix: true, themes: [], decades: [] } };
 export function getSettings() {
   try { return { ...DEFAULTS, ...JSON.parse(localStorage.getItem(KEY) || '{}') }; } catch { return { ...DEFAULTS }; }
 }

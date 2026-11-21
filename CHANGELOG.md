@@ -1,5 +1,11 @@
 # Cambios
 
+## 0.6.0 (2026-11-20)
+- Modo nuevo «Listas propias» (en el menú, junto a «Cartas de Hitster»): no hace falta escanear; la app elige una canción de sus listas y la pone en Spotify.
+- Listas: Películas, Disney, Rock en español, Rock en inglés, Pop en inglés, Pop en español, Música latina y Clásicos 60 y 70 (328 canciones). Se puede mezclar todo o elegir temas y décadas.
+- Al «¡Tiempo!», «Ver respuesta» muestra título, artista, año y si es grupo o solista (se muestra sola a los 6 s).
+- Las canciones no se repiten hasta que suenan todas las de la elección.
+
 ## 0.5.0 (2026-11-17)
 - En el menú: «Suena en» para elegir dónde suena Spotify (por defecto, el teléfono).
 - La cuenta regresiva empieza cuando la canción ya está sonando.

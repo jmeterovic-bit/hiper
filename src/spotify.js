@@ -5,6 +5,7 @@ import { Browser } from '@capacitor/browser';
 import { AppLauncher } from '@capacitor/app-launcher';
 import { SPOTIFY_CLIENT_ID, REDIRECT_URI, SCOPES } from './config.js';
 import { randomVerifier, challengeFor, authorizeUrl, parseCallback, pickDevice, isPlayingTrack } from './spotify-core.js';
+import { matchTrack } from './pool.js';
 
 const KEY = 'spotify.tokens';
 const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || null; } catch { return null; } };
@@ -91,6 +92,25 @@ export async function waitUntilPlaying(trackId, timeout = 12000) {
     await new Promise((r) => setTimeout(r, 400));
   }
   return false;
+}
+
+// Modo «Listas propias»: busca la canción en Spotify (título + artista) y guarda el ID en el teléfono.
+const FOUND = 'listas.encontradas';
+export async function searchTrack(song) {
+  let cache = {};
+  try { cache = JSON.parse(localStorage.getItem(FOUND)) || {}; } catch {}
+  if (cache[song.key]) return cache[song.key];
+  const q = `track:"${song.title}" artist:"${song.search}"`;
+  let res = await api('/search?type=track&limit=10&market=from_token&q=' + encodeURIComponent(q));
+  let t = matchTrack(res?.tracks?.items, song);
+  if (!t) {
+    res = await api('/search?type=track&limit=10&market=from_token&q=' + encodeURIComponent(song.title + ' ' + song.search));
+    t = matchTrack(res?.tracks?.items, song);
+  }
+  if (!t) return null;
+  cache[song.key] = t.id;
+  try { localStorage.setItem(FOUND, JSON.stringify(cache)); } catch {}
+  return t.id;
 }
 
 export async function pause() {
