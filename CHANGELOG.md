@@ -1,5 +1,8 @@
 # Cambios
 
+## 0.8.0 (2026-11-21)
+- Listas propias: cuatro listas nuevas, «Música colombiana», «Colombia 70 - 00's», «Música boliviana» y «Bolivia 70 - 20's» (en total, 12 temas y 383 canciones).
+
 ## 0.7.2 (2026-11-21)
 - Listas propias: revisados los años de todas las canciones. «Billie Jean» queda en 1982 (antes decía 1983).
 
