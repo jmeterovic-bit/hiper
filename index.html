@@ -14,6 +14,10 @@
 <section class="screen" id="menu">
   <div class="disc spin" aria-hidden="true"></div>
   <h1>Bingo del<br>Vinilo</h1>
+  <div class="seg mode" role="group" aria-label="Cómo se juega">
+    <button data-mode="hitster">Cartas de Hitster</button><button data-mode="listas">Listas propias</button>
+  </div>
+  <button class="set-row lists-row" id="listsBtn" hidden><span>Música</span><b id="listsName">Todas mezcladas</b></button>
   <p class="sub">Elige el lado de las tarjetas</p>
   <div class="sides">
     <button class="side" data-side="A"><span><b>Lado A</b><small>BÁSICO</small></span><span class="chips" id="chipsA"></span></button>
@@ -35,6 +39,16 @@
   <p class="sub">Si tu aparato no aparece, abre Spotify en él y toca «Actualizar».</p>
   <div class="devlist" id="devList"></div>
   <div class="row"><button class="btn ghost" id="devRefresh">Actualizar</button><button class="btn" id="devBack">Listo</button></div>
+</section>
+
+<section class="screen scroll" id="lists" hidden>
+  <h2 class="dtitle">¿Qué música suena?</h2>
+  <button class="dev mixall" id="mixAll"><span>Mezclar todas las listas</span><small id="mixCount"></small></button>
+  <p class="sub">O elige temas y, si quieres, décadas</p>
+  <div class="pick" id="themeSel" role="group" aria-label="Temas"></div>
+  <div class="pick" id="decadeSel" role="group" aria-label="Décadas"></div>
+  <p class="sub" id="poolCount"></p>
+  <button class="btn" id="listsBack">Listo</button>
 </section>
 
 <div class="top" id="topbar" hidden><span id="sideLabel"></span><button id="changeSide">Cambiar lado</button></div>
@@ -70,7 +84,9 @@
 <section class="screen" id="timeup" hidden>
   <h1>¡Tiempo!</h1>
   <div class="tcat" id="tCat"><div class="dice" id="tDice" aria-hidden="true"></div><span id="tCatName"></span></div>
-  <p class="sub light">Anoten su respuesta</p>
+  <p class="sub light" id="tSub">Anoten su respuesta</p>
+  <button class="btn ghost" id="reveal" hidden>Ver respuesta</button>
+  <div class="answer" id="answer" hidden><b id="aTitle"></b><span id="aArtist"></span><span class="ameta" id="aMeta"></span></div>
   <div class="row">
     <button class="btn" id="next">Siguiente ronda</button>
     <button class="btn ghost" id="bingo">¡Bingo! Terminar</button>

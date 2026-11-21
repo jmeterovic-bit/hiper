@@ -11,14 +11,16 @@ import { startFx } from './fx.js';
 import { unlockAudio, tick, JINGLES, buzzer, fanfare } from './sounds.js';
 import * as spotify from './spotify.js';
 import { scanQr, keepAwake, buzz, openHitsterApp, isNative } from './native.js';
+import { THEMES, DECADES, decadeName } from './listas.js';
+import { buildPool, pickNext, describeType } from './pool.js';
 
 const $ = (id) => document.getElementById(id);
-const SCREENS = ['menu', 'devices', 'ready', 'roulette', 'picked', 'play', 'timeup', 'end'];
+const SCREENS = ['menu', 'devices', 'lists', 'ready', 'roulette', 'picked', 'play', 'timeup', 'end'];
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const fx = startFx($('fx'));
-let side = 'A', current = 0, mode = 'idle', raf = 0;
+let side = 'A', current = 0, mode = 'idle', raf = 0, song = null, revealTimer = 0;
 
-function show(id) { SCREENS.forEach((s) => ($(s).hidden = s !== id)); $('topbar').hidden = id === 'menu' || id === 'devices'; }
+function show(id) { SCREENS.forEach((s) => ($(s).hidden = s !== id)); $('topbar').hidden = ['menu', 'devices', 'lists'].includes(id); }
 function wash(c) { $('bgwash').style.background = c; }
 const PIPS = { 1: [4], 2: [0, 8], 3: [0, 4, 8], 4: [0, 2, 6, 8], 5: [0, 2, 4, 6, 8] };
 function dice(el, n) { el.innerHTML = ''; for (let i = 0; i < 9; i++) { const d = document.createElement('i'); if (PIPS[n].includes(i)) d.className = 'on'; el.appendChild(d); } }
@@ -73,6 +75,91 @@ $('spotifyBtn').onclick = async () => {
 };
 refreshSpotify();
 
+// ---- Modo de juego: cartas de Hitster o listas propias ----
+const isListas = () => getSettings().mode === 'listas';
+function choiceLabel(ch) {
+  if (ch.mix) return 'Todas mezcladas';
+  const t = ch.themes.length ? ch.themes.map((id) => THEMES.find((x) => x.id === id)?.name).filter(Boolean).join(', ') : 'Todos los temas';
+  const d = ch.decades.length ? ' · ' + ch.decades.map(decadeName).join(', ') : '';
+  return t + d;
+}
+function refreshMode() {
+  const st = getSettings();
+  document.querySelectorAll('[data-mode]').forEach((b) => b.classList.toggle('on', b.dataset.mode === st.mode));
+  $('listsBtn').hidden = st.mode !== 'listas';
+  $('listsName').textContent = choiceLabel(st.choice);
+  $('toScan').textContent = st.mode === 'listas' ? '🎵 Poner canción' : '📷 Escanear tarjeta';
+}
+document.querySelectorAll('[data-mode]').forEach((b) => b.addEventListener('click', () => { setSettings({ mode: b.dataset.mode }); refreshMode(); }));
+
+function renderLists() {
+  const ch = getSettings().choice;
+  const all = buildPool({ mix: true }).length;
+  $('mixAll').classList.toggle('on', ch.mix);
+  $('mixCount').textContent = all + ' canciones';
+  const toggle = (list, v) => (list.includes(v) ? list.filter((x) => x !== v) : [...list, v]);
+  const chipRow = (box, items, selected, onTap) => {
+    box.textContent = '';
+    for (const [v, label] of items) {
+      const b = document.createElement('button');
+      b.textContent = label; b.className = !ch.mix && selected.includes(v) ? 'on' : '';
+      b.onclick = () => { onTap(v); renderLists(); };
+      box.appendChild(b);
+    }
+  };
+  chipRow($('themeSel'), THEMES.map((t) => [t.id, t.name]), ch.themes,
+    (v) => setSettings({ choice: { ...ch, mix: false, themes: toggle(ch.mix ? [] : ch.themes, v) } }));
+  chipRow($('decadeSel'), DECADES.filter((d) => buildPool({ mix: false, decades: [d] }).length >= 5).map((d) => [d, decadeName(d)]), ch.decades,
+    (v) => setSettings({ choice: { ...ch, mix: false, decades: toggle(ch.mix ? [] : ch.decades, v) } }));
+  const n = buildPool(ch).length;
+  $('poolCount').textContent = ch.mix ? 'Suenan canciones de todas las listas.' : n ? n + ' canciones para jugar.' : 'Ninguna canción cumple esa elección.';
+}
+$('mixAll').onclick = () => { setSettings({ choice: { mix: true, themes: [], decades: [] } }); renderLists(); };
+$('listsBtn').onclick = () => { show('lists'); renderLists(); };
+$('listsBack').onclick = () => { refreshMode(); show('menu'); };
+refreshMode();
+
+// Canciones que ya sonaron (para no repetir hasta que salgan todas).
+const PLAYED = 'listas.jugadas';
+const loadPlayed = () => { try { return JSON.parse(localStorage.getItem(PLAYED)) || []; } catch { return []; } };
+const savePlayed = (p) => { try { localStorage.setItem(PLAYED, JSON.stringify(p.slice(-2000))); } catch {} };
+
+async function playFromList() {
+  clearMsg();
+  if (!spotify.isLoggedIn()) { alertMsg('Para las listas propias entra a Spotify en el menú («Cambiar lado»).'); return; }
+  const pool = buildPool(getSettings().choice);
+  if (!pool.length) { alertMsg('Ninguna canción cumple la elección de listas. Cámbiala en el menú.'); return; }
+  $('toScan').disabled = true; alertMsg('Buscando una canción…');
+  try {
+    let played = loadPlayed();
+    for (let tries = 0; tries < 5; tries++) {
+      const next = pickNext(pool, played); played = next.played; savePlayed(played);
+      const id = await spotify.searchTrack(next.song);
+      if (!id) continue;
+      const dev = await spotify.playTrack(id, getSettings().deviceId);
+      if (getSettings().deviceId && dev.id !== getSettings().deviceId) setSettings({ deviceId: dev.id, deviceName: dev.name });
+      song = next.song;
+      startRound(id);
+      return;
+    }
+    alertMsg('No encontré esas canciones en Spotify. Prueba de nuevo.');
+  } catch (e) {
+    alertMsg(e.message);
+    if (e instanceof spotify.NoDeviceError) { $('msgActions').hidden = false; $('openSpotify').hidden = false; }
+  } finally { $('toScan').disabled = false; }
+}
+
+function showAnswer() {
+  clearTimeout(revealTimer);
+  if (!song) return;
+  $('reveal').hidden = true;
+  $('aTitle').textContent = song.title;
+  $('aArtist').textContent = song.artist;
+  $('aMeta').textContent = song.year + ' · ' + describeType(song.type);
+  $('answer').hidden = false; $('tSub').hidden = true;
+}
+$('reveal').onclick = () => showAnswer();
+
 function alertMsg(text) { $('msg').textContent = text; $('msg').hidden = false; }
 function clearMsg() { $('msg').hidden = true; $('msgActions').hidden = true; ['openSpotify', 'openHitster', 'startManual'].forEach((id) => ($(id).hidden = true)); }
 
@@ -80,9 +167,9 @@ document.querySelectorAll('.side').forEach((b) => b.addEventListener('click', ()
   side = b.dataset.side;
   $('sideLabel').textContent = SIDES[side].name + ' · ' + SIDES[side].level;
   unlockAudio(); keepAwake(true); toReady();
-  loadCatalog().catch(() => {});
+  if (!isListas()) loadCatalog().catch(() => {});
 }));
-$('changeSide').onclick = () => { stopRound(); if (spotify.isLoggedIn()) spotify.pause(); fx.setRate(0); wash('var(--bg)'); keepAwake(false); show('menu'); };
+$('changeSide').onclick = () => { clearTimeout(revealTimer); song = null; stopRound(); if (spotify.isLoggedIn()) spotify.pause(); fx.setRate(0); wash('var(--bg)'); keepAwake(false); show('menu'); };
 
 function toReady() { fx.setRate(1.5); wash('var(--bg)'); show('ready'); }
 $('go').onclick = () => { unlockAudio(); roulette(); };
@@ -113,6 +200,7 @@ let handoff = 'idle', handoffTimer = 0, lastOpen = null;
 // Con Spotify conectado: la app lee el QR, busca la canción en la lista de Hitster y la pone en Spotify.
 // Sin Spotify (o si la carta no está en la lista): se abre la app de Hitster para escanear ahí; la ronda empieza al volver.
 $('toScan').onclick = () => {
+  if (isListas()) return playFromList();
   if (spotify.isLoggedIn()) return scanHere();
   alertMsg('Para escanear aquí, entra a Spotify en el menú («Cambiar lado»). También puedes escanear en la app de Hitster.');
   $('msgActions').hidden = false; $('openHitster').hidden = false;
@@ -197,11 +285,14 @@ function stopRound() { mode = 'idle'; cancelAnimationFrame(raf); }
 function timeUp() {
   stopRound(); fx.setRate(0); fx.clear(); wash('var(--red)');
   $('tCat').style.background = COLORS[current]; setCat(current, $('tCatName'), $('tDice'));
+  $('answer').hidden = true; $('tSub').hidden = false;
+  $('reveal').hidden = !song;
+  if (song) revealTimer = setTimeout(showAnswer, 6000);   // da unos segundos para anotar
   show('timeup');
   buzzer(); buzz(); if (spotify.isLoggedIn() && getSettings().listen === 'fragmento') spotify.pause();
 }
-$('next').onclick = () => { unlockAudio(); toReady(); };
-$('bingo').onclick = () => { if (spotify.isLoggedIn()) spotify.pause(); show('end'); wash('var(--bg)'); fx.setRate(25); fanfare(); setTimeout(() => fx.setRate(4), 2500); };
+$('next').onclick = () => { clearTimeout(revealTimer); song = null; unlockAudio(); toReady(); };
+$('bingo').onclick = () => { clearTimeout(revealTimer); song = null; if (spotify.isLoggedIn()) spotify.pause(); show('end'); wash('var(--bg)'); fx.setRate(25); fanfare(); setTimeout(() => fx.setRate(4), 2500); };
 $('again').onclick = () => { fx.setRate(0); keepAwake(false); show('menu'); };
 
 // Si el round sigue corriendo cuando la app vuelve al frente (por ejemplo, tras abrir Hitster), el reloj usa la hora real.
