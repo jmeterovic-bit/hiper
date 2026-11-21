@@ -1,5 +1,8 @@
 # Cambios
 
+## 0.7.1 (2026-11-20)
+- «Fragmento»: en algunos teléfonos la canción seguía empezando al principio. Ahora, si arranca en los primeros 15 s, la app salta a un punto al azar antes de empezar la cuenta.
+
 ## 0.7.0 (2026-11-20)
 - «Fragmento» empieza la canción en un punto al azar (no en el principio ni en los últimos 40 s). «Completa» sigue empezando desde el principio. Vale en los dos modos.
 - En la respuesta del «¡Tiempo!», la letra se achica sola si el título o el artista son muy largos.
