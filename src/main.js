@@ -12,7 +12,7 @@ import { unlockAudio, tick, JINGLES, buzzer, fanfare } from './sounds.js';
 import * as spotify from './spotify.js';
 import { scanQr, keepAwake, buzz, openHitsterApp, isNative } from './native.js';
 import { THEMES, DECADES, decadeName } from './listas.js';
-import { buildPool, pickNext, describeType } from './pool.js';
+import { buildPool, pickNext, describeType, adaptCats } from './pool.js';
 
 const $ = (id) => document.getElementById(id);
 const SCREENS = ['menu', 'devices', 'lists', 'ready', 'roulette', 'picked', 'play', 'timeup', 'end'];
@@ -24,7 +24,9 @@ function show(id) { SCREENS.forEach((s) => ($(s).hidden = s !== id)); $('topbar'
 function wash(c) { $('bgwash').style.background = c; }
 const PIPS = { 1: [4], 2: [0, 8], 3: [0, 4, 8], 4: [0, 2, 6, 8], 5: [0, 2, 4, 6, 8] };
 function dice(el, n) { el.innerHTML = ''; for (let i = 0; i < 9; i++) { const d = document.createElement('i'); if (PIPS[n].includes(i)) d.className = 'on'; el.appendChild(d); } }
-function setCat(i, catEl, diceEl) { catEl.textContent = SIDES[side].cats[i]; if (diceEl) dice(diceEl, i + 1); }
+// Nombres de las categorías de esta partida (en «Listas propias» se ajustan a las décadas elegidas).
+function catsNow() { return getSettings().mode === 'listas' ? adaptCats(SIDES[side].cats, buildPool(getSettings().choice)) : SIDES[side].cats; }
+function setCat(i, catEl, diceEl) { catEl.textContent = catsNow()[i]; if (diceEl) dice(diceEl, i + 1); }
 
 for (const s of 'AB') {
   SIDES[s].cats.forEach((n, i) => {
@@ -113,6 +115,9 @@ function renderLists() {
     (v) => setSettings({ choice: { ...ch, mix: false, decades: toggle(ch.mix ? [] : ch.decades, v) } }));
   const n = buildPool(ch).length;
   $('poolCount').textContent = ch.mix ? 'Suenan canciones de todas las listas.' : n ? n + ' canciones para jugar.' : 'Ninguna canción cumple esa elección.';
+  const adapted = adaptCats(SIDES.A.cats, buildPool(ch));
+  const changes = SIDES.A.cats.map((c, i) => (c !== adapted[i] ? `«${c}» será «${adapted[i]}»` : null)).filter(Boolean);
+  if (n && changes.length) $('poolCount').textContent += ' Con esta elección, ' + changes.join(' y ') + '.';
 }
 $('mixAll').onclick = () => { setSettings({ choice: { mix: true, themes: [], decades: [] } }); renderLists(); };
 $('listsBtn').onclick = () => { show('lists'); renderLists(); };
@@ -136,7 +141,7 @@ async function playFromList() {
       const next = pickNext(pool, played); played = next.played; savePlayed(played);
       const id = await spotify.searchTrack(next.song);
       if (!id) continue;
-      const dev = await spotify.playTrack(id, getSettings().deviceId);
+      const dev = await spotify.playTrack(id, getSettings().deviceId, { random: getSettings().listen === 'fragmento' });
       if (getSettings().deviceId && dev.id !== getSettings().deviceId) setSettings({ deviceId: dev.id, deviceName: dev.name });
       song = next.song;
       startRound(id);
@@ -157,8 +162,16 @@ function showAnswer() {
   $('aArtist').textContent = song.artist;
   $('aMeta').textContent = song.year + ' · ' + describeType(song.type);
   $('answer').hidden = false; $('tSub').hidden = true;
+  fitText($('aTitle'), 32, 14); fitText($('aArtist'), 18, 12);
 }
 $('reveal').onclick = () => showAnswer();
+
+// Achica la letra hasta que el texto entre en su recuadro (títulos muy largos).
+function fitText(el, max, min) {
+  el.style.fontSize = max + 'px'; el.style.overflowWrap = '';
+  for (let px = max; px > min && el.scrollWidth > el.clientWidth; px--) el.style.fontSize = px - 1 + 'px';
+  if (el.scrollWidth > el.clientWidth) el.style.overflowWrap = 'anywhere';   // ni con la letra mínima: se corta la palabra
+}
 
 function alertMsg(text) { $('msg').textContent = text; $('msg').hidden = false; }
 function clearMsg() { $('msg').hidden = true; $('msgActions').hidden = true; ['openSpotify', 'openHitster', 'startManual'].forEach((id) => ($(id).hidden = true)); }
@@ -243,7 +256,7 @@ async function scanHere() {
     return;
   }
   try {
-    const dev = await spotify.playTrack(track, getSettings().deviceId);
+    const dev = await spotify.playTrack(track, getSettings().deviceId, { random: getSettings().listen === 'fragmento' });
     if (getSettings().deviceId && dev.id !== getSettings().deviceId) setSettings({ deviceId: dev.id, deviceName: dev.name });
     startRound(track);
   } catch (e) {
@@ -262,7 +275,7 @@ document.addEventListener('visibilitychange', () => {
 let t0 = 0, colorT = 0;
 // La cuenta de 25 s empieza cuando Spotify de verdad está sonando (máximo 12 s de espera).
 async function startRound(trackId = null) {
-  clearMsg(); $('plCat').textContent = SIDES[side].cats[current]; show('play');
+  clearMsg(); $('plCat').textContent = catsNow()[current]; show('play');
   if (trackId) {
     mode = 'loading'; $('plSub').textContent = 'Cargando la canción…'; fx.setRate(1.5);
     await spotify.waitUntilPlaying(trackId);
