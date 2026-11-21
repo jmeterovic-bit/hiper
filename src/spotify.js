@@ -77,16 +77,17 @@ export async function listDevices() {
 }
 
 // Pone la canción en el aparato elegido (o el mejor disponible). Devuelve el aparato usado.
-// random: empieza en un punto al azar (modo «Fragmento»). Si no se puede saber la duración antes,
-// se salta al punto al azar apenas empieza a sonar (en waitUntilPlaying).
-let seekPending = null;
+// random: empieza en un punto al azar (modo «Fragmento»). Se pide la duración para arrancar ahí,
+// y además waitUntilPlaying revisa que de verdad no haya arrancado al principio (si no, salta con seek).
+// En el teléfono de Jose (0.7.0) seguía empezando al inicio: no basta con position_ms.
+let randomWanted = null;
 export async function playTrack(trackId, preferredId = null, { random = false } = {}) {
   const dev = pickDevice(await listDevices(), preferredId);
   if (!dev) throw new NoDeviceError('Spotify está cerrado. Ábrelo un momento y vuelve.');
   let position = 0;
-  seekPending = null;
+  randomWanted = random ? trackId : null;
   if (random) {
-    try { position = randomStart((await api('/tracks/' + trackId)).duration_ms); } catch { seekPending = trackId; }
+    try { position = randomStart((await api('/tracks/' + trackId))?.duration_ms); } catch {}
   }
   await api('/me/player/play?device_id=' + encodeURIComponent(dev.id), { method: 'PUT', body: { uris: ['spotify:track:' + trackId], position_ms: position } });
   return dev;
@@ -99,16 +100,28 @@ export async function waitUntilPlaying(trackId, timeout = 12000) {
     try {
       const st = await api('/me/player');
       if (isPlayingTrack(st, trackId)) {
-        if (seekPending !== trackId) return true;
-        seekPending = null;
-        const pos = randomStart(st.item.duration_ms);
-        if (pos) await api('/me/player/seek?position_ms=' + pos, { method: 'PUT' });
+        if (randomWanted !== trackId) return true;
+        randomWanted = null;
+        await jumpToRandom(st);
         return true;
       }
     } catch {}
     await new Promise((r) => setTimeout(r, 400));
   }
   return false;
+}
+
+// Si la canción arrancó en los primeros 15 s, salta a un punto al azar (hasta 2 intentos).
+// Sin duración conocida se supone 3 minutos.
+const SEEK_IF_BEFORE = 15000;
+async function jumpToRandom(st) {
+  for (let i = 0; i < 2 && st && st.progress_ms < SEEK_IF_BEFORE; i++) {
+    const pos = randomStart(st.item?.duration_ms || 180000);
+    if (!pos) return;
+    try { await api('/me/player/seek?position_ms=' + pos, { method: 'PUT' }); } catch {}
+    await new Promise((r) => setTimeout(r, 900));
+    try { st = await api('/me/player'); } catch { return; }
+  }
 }
 
 // Modo «Listas propias»: busca la canción en Spotify (título + artista) y guarda el ID en el teléfono.
