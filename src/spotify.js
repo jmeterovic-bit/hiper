@@ -100,11 +100,13 @@ export async function searchTrack(song) {
   let cache = {};
   try { cache = JSON.parse(localStorage.getItem(FOUND)) || {}; } catch {}
   if (cache[song.key]) return cache[song.key];
+  // Sin «market=from_token»: ese parámetro pide un permiso más (user-read-private) y Spotify respondía
+  // «Insufficient client scope». Con el token del usuario, Spotify ya usa el país de su cuenta.
   const q = `track:"${song.title}" artist:"${song.search}"`;
-  let res = await api('/search?type=track&limit=10&market=from_token&q=' + encodeURIComponent(q));
+  let res = await api('/search?type=track&limit=10&q=' + encodeURIComponent(q));
   let t = matchTrack(res?.tracks?.items, song);
   if (!t) {
-    res = await api('/search?type=track&limit=10&market=from_token&q=' + encodeURIComponent(song.title + ' ' + song.search));
+    res = await api('/search?type=track&limit=10&q=' + encodeURIComponent(song.title + ' ' + song.search));
     t = matchTrack(res?.tracks?.items, song);
   }
   if (!t) return null;

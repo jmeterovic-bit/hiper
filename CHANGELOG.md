@@ -1,5 +1,8 @@
 # Cambios
 
+## 0.6.1 (2026-11-20)
+- Listas propias: «Poner canción» daba «Insufficient client scope». La búsqueda en Spotify ya no pide un permiso que la app no tiene.
+
 ## 0.6.0 (2026-11-20)
 - Modo nuevo «Listas propias» (en el menú, junto a «Cartas de Hitster»): no hace falta escanear; la app elige una canción de sus listas y la pone en Spotify.
 - Listas: Películas, Disney, Rock en español, Rock en inglés, Pop en inglés, Pop en español, Música latina y Clásicos 60 y 70 (328 canciones). Se puede mezclar todo o elegir temas y décadas.
