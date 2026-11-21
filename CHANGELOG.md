@@ -1,5 +1,8 @@
 # Cambios
 
+## 0.7.2 (2026-11-21)
+- Listas propias: revisados los años de todas las canciones. «Billie Jean» queda en 1982 (antes decía 1983).
+
 ## 0.7.1 (2026-11-20)
 - «Fragmento»: en algunos teléfonos la canción seguía empezando al principio. Ahora, si arranca en los primeros 15 s, la app salta a un punto al azar antes de empezar la cuenta.
 

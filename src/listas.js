@@ -199,7 +199,7 @@ export const THEMES = [
   },
   {
     id: 'pop-en', name: 'Pop en inglés', songs: [
-      ['Billie Jean', 'Michael Jackson', 1983, 's'],
+      ['Billie Jean', 'Michael Jackson', 1982, 's'],
       ['Like a Virgin', 'Madonna', 1984, 's'],
       ['Like a Prayer', 'Madonna', 1989, 's'],
       ['Vogue', 'Madonna', 1990, 's'],
