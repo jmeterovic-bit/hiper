@@ -14,7 +14,7 @@
 | Spotify | Web API con PKCE (Client ID en `src/config.js`, redirect `bingovinilo://callback`) | Suena mientras la app sigue en pantalla. Jose tiene Premium. |
 | Aparato de Spotify | Ajuste «Suena en» en el menú (lista de `/me/player/devices`, guardado en el teléfono). Sin elección: el teléfono antes que el aparato activo. | Sonaba en la PC de Jose (era el aparato activo). |
 | Inicio de la ronda | La cuenta de 25 s empieza cuando `/me/player` dice que la canción ya suena (máx. 12 s de espera). | Spotify tarda unos segundos en empezar (Jose, 2026-11-17). |
-| Escuchar | Ajuste «Fragmento» (se pausa al «¡Tiempo!») o «Completa» (sigue sonando; se pausa al terminar la partida). | Como la app oficial, pedido de Jose. |
+| Escuchar | Ajuste «Fragmento» (empieza en un punto al azar entre el 20 % y 40 s antes del final; se pausa al «¡Tiempo!») o «Completa» (sigue sonando; se pausa al terminar la partida). | Como la app oficial, pedido de Jose. |
 | Token | Se renueva solo; si vence (180 días), la app muestra «Entrar a Spotify» | Límite de Spotify, no se puede quitar. |
 | QR | `scan()` de Google Code Scanner | No pide permiso de cámara y es estable. |
 | Canción de cada carta | Con Spotify conectado: escáner propio + lista de Jumbo (`gameset_database.json`, la misma de la app oficial; `{gamesets:[{sku, gameset_data:{cards:[{CardNumber, Spotify}]}}]}`), descargada en el teléfono y guardada en IndexedDB 7 días. Sin Spotify o carta fuera de la lista: botón para escanear en la app de Hitster (la ronda empieza al volver). | Jose eligió la lista de Jumbo (2026-11-17) tras ver que abrir la app de Hitster obliga a escanear dos veces. La lista trae las ediciones Latino (p. ej. aaab0004, aaaa0053, aaaa0102). No se guarda una copia en el repo. |
@@ -34,6 +34,7 @@
 ## Bitácora
 | Fecha | Versión | Cambio |
 |---|---|---|
+| 2026-11-20 | 0.7.0 | «Fragmento» empieza en un punto al azar (duración con `/tracks/{id}`; si falla, salta con `/me/player/seek` apenas suena). Letra de la respuesta se ajusta a títulos largos. Pedidos de Jose. |
 | 2026-11-20 | 0.6.1 | «Insufficient client scope» al poner canción en Listas propias: la búsqueda usaba `market=from_token`, que exige `user-read-private`. Se quita el parámetro (con el token, Spotify usa el país de la cuenta). |
 | 2026-11-20 | 0.6.0 | Modo «Listas propias»: 8 temas (328 canciones), mezclar todas o elegir temas y décadas, respuesta en pantalla al «¡Tiempo!». Pedido de Jose. |
 | 2026-11-18 | 0.5.0 | El Release se publica solo al mezclar a `main`: si la versión de `package.json` no tiene Release, el workflow crea la etiqueta `v<versión>` y lo publica con el APK y las notas del CHANGELOG. Pedido de Jose. |

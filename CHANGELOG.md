@@ -1,5 +1,9 @@
 # Cambios
 
+## 0.7.0 (2026-11-20)
+- «Fragmento» empieza la canción en un punto al azar (no en el principio ni en los últimos 40 s). «Completa» sigue empezando desde el principio. Vale en los dos modos.
+- En la respuesta del «¡Tiempo!», la letra se achica sola si el título o el artista son muy largos.
+
 ## 0.6.1 (2026-11-20)
 - Listas propias: «Poner canción» daba «Insufficient client scope». La búsqueda en Spotify ya no pide un permiso que la app no tiene.
 

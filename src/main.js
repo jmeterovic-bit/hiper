@@ -136,7 +136,7 @@ async function playFromList() {
       const next = pickNext(pool, played); played = next.played; savePlayed(played);
       const id = await spotify.searchTrack(next.song);
       if (!id) continue;
-      const dev = await spotify.playTrack(id, getSettings().deviceId);
+      const dev = await spotify.playTrack(id, getSettings().deviceId, { random: getSettings().listen === 'fragmento' });
       if (getSettings().deviceId && dev.id !== getSettings().deviceId) setSettings({ deviceId: dev.id, deviceName: dev.name });
       song = next.song;
       startRound(id);
@@ -157,8 +157,16 @@ function showAnswer() {
   $('aArtist').textContent = song.artist;
   $('aMeta').textContent = song.year + ' · ' + describeType(song.type);
   $('answer').hidden = false; $('tSub').hidden = true;
+  fitText($('aTitle'), 32, 14); fitText($('aArtist'), 18, 12);
 }
 $('reveal').onclick = () => showAnswer();
+
+// Achica la letra hasta que el texto entre en su recuadro (títulos muy largos).
+function fitText(el, max, min) {
+  el.style.fontSize = max + 'px'; el.style.overflowWrap = '';
+  for (let px = max; px > min && el.scrollWidth > el.clientWidth; px--) el.style.fontSize = px - 1 + 'px';
+  if (el.scrollWidth > el.clientWidth) el.style.overflowWrap = 'anywhere';   // ni con la letra mínima: se corta la palabra
+}
 
 function alertMsg(text) { $('msg').textContent = text; $('msg').hidden = false; }
 function clearMsg() { $('msg').hidden = true; $('msgActions').hidden = true; ['openSpotify', 'openHitster', 'startManual'].forEach((id) => ($(id).hidden = true)); }
@@ -243,7 +251,7 @@ async function scanHere() {
     return;
   }
   try {
-    const dev = await spotify.playTrack(track, getSettings().deviceId);
+    const dev = await spotify.playTrack(track, getSettings().deviceId, { random: getSettings().listen === 'fragmento' });
     if (getSettings().deviceId && dev.id !== getSettings().deviceId) setSettings({ deviceId: dev.id, deviceName: dev.name });
     startRound(track);
   } catch (e) {

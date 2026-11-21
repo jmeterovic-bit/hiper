@@ -4,7 +4,7 @@ import { App } from '@capacitor/app';
 import { Browser } from '@capacitor/browser';
 import { AppLauncher } from '@capacitor/app-launcher';
 import { SPOTIFY_CLIENT_ID, REDIRECT_URI, SCOPES } from './config.js';
-import { randomVerifier, challengeFor, authorizeUrl, parseCallback, pickDevice, isPlayingTrack } from './spotify-core.js';
+import { randomVerifier, challengeFor, authorizeUrl, parseCallback, pickDevice, isPlayingTrack, randomStart } from './spotify-core.js';
 import { matchTrack } from './pool.js';
 
 const KEY = 'spotify.tokens';
@@ -77,10 +77,18 @@ export async function listDevices() {
 }
 
 // Pone la canción en el aparato elegido (o el mejor disponible). Devuelve el aparato usado.
-export async function playTrack(trackId, preferredId = null) {
+// random: empieza en un punto al azar (modo «Fragmento»). Si no se puede saber la duración antes,
+// se salta al punto al azar apenas empieza a sonar (en waitUntilPlaying).
+let seekPending = null;
+export async function playTrack(trackId, preferredId = null, { random = false } = {}) {
   const dev = pickDevice(await listDevices(), preferredId);
   if (!dev) throw new NoDeviceError('Spotify está cerrado. Ábrelo un momento y vuelve.');
-  await api('/me/player/play?device_id=' + encodeURIComponent(dev.id), { method: 'PUT', body: { uris: ['spotify:track:' + trackId], position_ms: 0 } });
+  let position = 0;
+  seekPending = null;
+  if (random) {
+    try { position = randomStart((await api('/tracks/' + trackId)).duration_ms); } catch { seekPending = trackId; }
+  }
+  await api('/me/player/play?device_id=' + encodeURIComponent(dev.id), { method: 'PUT', body: { uris: ['spotify:track:' + trackId], position_ms: position } });
   return dev;
 }
 
@@ -88,7 +96,16 @@ export async function playTrack(trackId, preferredId = null) {
 export async function waitUntilPlaying(trackId, timeout = 12000) {
   const end = Date.now() + timeout;
   while (Date.now() < end) {
-    try { if (isPlayingTrack(await api('/me/player'), trackId)) return true; } catch {}
+    try {
+      const st = await api('/me/player');
+      if (isPlayingTrack(st, trackId)) {
+        if (seekPending !== trackId) return true;
+        seekPending = null;
+        const pos = randomStart(st.item.duration_ms);
+        if (pos) await api('/me/player/seek?position_ms=' + pos, { method: 'PUT' });
+        return true;
+      }
+    } catch {}
     await new Promise((r) => setTimeout(r, 400));
   }
   return false;

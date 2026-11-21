@@ -46,3 +46,15 @@ describe('rouletteSteps', () => {
     }
   });
 });
+
+import { randomStart } from '../src/spotify-core.js';
+describe('randomStart', () => {
+  it('queda entre el 20 % y 40 s antes del final', () => {
+    expect(randomStart(200000, () => 0)).toBe(40000);
+    expect(randomStart(200000, () => 0.999999)).toBeLessThanOrEqual(160000);
+  });
+  it('canciones cortas o sin duración empiezan desde el principio', () => {
+    expect(randomStart(45000, () => 0.5)).toBe(0);
+    expect(randomStart(undefined)).toBe(0);
+  });
+});

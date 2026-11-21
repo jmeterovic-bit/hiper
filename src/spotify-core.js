@@ -46,6 +46,13 @@ export function pickDevice(devices, preferredId = null) {
     list.find((d) => d.type === 'Smartphone') || list.find((d) => d.is_active) || list[0] || null;
 }
 
+// Modo «Fragmento»: punto de partida al azar, ni en el arranque (20 % inicial) ni en los últimos 40 s.
+export function randomStart(durationMs, rnd = Math.random) {
+  if (!durationMs) return 0;
+  const min = durationMs * 0.2, max = durationMs - 40000;
+  return max > min ? Math.floor(min + rnd() * (max - min)) : 0;
+}
+
 // ¿Ya está sonando esa canción? (respuesta de GET /me/player)
 export function isPlayingTrack(state, trackId) {
   return !!(state && state.is_playing && state.item && state.item.id === trackId && state.progress_ms > 200);
