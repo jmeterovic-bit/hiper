@@ -1,5 +1,8 @@
 # Cambios
 
+## 0.9.2 (2026-11-22)
+- Cuando sale la categoría hay un botón «🎲 Otra categoría»: si a nadie le sirve, se tira de nuevo sin poner la canción. Nunca repite la misma.
+
 ## 0.9.1 (2026-11-22)
 - «Bandas sonoras»: jugando solo con esta lista, en el lado A «Grupo o solista» pasa a «Película».
 
