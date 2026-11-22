@@ -1,5 +1,8 @@
 # Cambios
 
+## 0.9.1 (2026-11-22)
+- «Bandas sonoras»: jugando solo con esta lista, en el lado A «Grupo o solista» pasa a «Película».
+
 ## 0.9.0 (2026-11-22)
 - Listas propias: nueva lista «Bandas sonoras» (50 canciones). Al «¡Tiempo!» la respuesta muestra primero la película, y debajo la canción y quién la canta; el año es el de la película.
 - Si juegas solo con «Bandas sonoras», en el lado B «Título» pasa a «Película» y «Artista» a «Cantante».

@@ -53,14 +53,15 @@ export const describeType = (t) => (t === 'g' ? 'Grupo' : 'Solista');
 // - Varias décadas, pero todas antes (o todas después) del 2000: la pregunta usa el cambio de década
 //   que mejor reparte las canciones (p. ej. «¿Antes o después de 1990?»; 1990 cuenta como «después»).
 // Los colores no cambian, así que las tarjetas impresas siguen sirviendo.
-// - Todas de películas («Bandas sonoras»): «Título» pasa a «Película» y «Artista» a «Cantante».
+// - Todas de películas («Bandas sonoras»): «Grupo o solista» y «Título» pasan a «Película», y «Artista» a «Cantante».
 const yy = (y) => (y < 2000 ? String(y).slice(2) : String(y));
 export function adaptCats(cats, pool) {
   const out = [...cats];
   if (!pool || !pool.length) return out;
   if (pool.every((s) => s.film)) {
-    const iT = cats.indexOf('Título'), iA = cats.indexOf('Artista');
+    const iT = cats.indexOf('Título'), iA = cats.indexOf('Artista'), iG = cats.indexOf('Grupo o solista');
     if (iT >= 0) out[iT] = 'Película';
+    if (iG >= 0) out[iG] = 'Película';
     if (iA >= 0) out[iA] = 'Cantante';
   }
   const decades = [...new Set(pool.map((s) => decadeOf(s.year)))].sort((a, b) => a - b);
