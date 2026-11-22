@@ -189,10 +189,14 @@ $('changeSide').onclick = () => { clearTimeout(revealTimer); song = null; stopRo
 
 function toReady() { fx.setRate(1.5); wash('var(--bg)'); show('ready'); }
 $('go').onclick = () => { unlockAudio(); roulette(); };
+// Si a nadie le sirve la categoría que salió, se tira de nuevo sin poner canción.
+$('reroll').onclick = () => { clearMsg(); roulette(current); };
 
-function roulette() {
+// skip: categoría que no debe salir (al pedir «Otra categoría», nunca repite la misma)
+function roulette(skip = -1) {
   show('roulette'); fx.setRate(10);
-  const pick = (Math.random() * 5) | 0;
+  let pick = (Math.random() * 5) | 0;
+  if (pick === skip) pick = (pick + 1 + ((Math.random() * 4) | 0)) % 5;
   const steps = rouletteSteps(pick);
   let k = 0;
   (function step() {

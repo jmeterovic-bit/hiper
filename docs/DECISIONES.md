@@ -34,6 +34,7 @@
 ## Bitácora
 | Fecha | Versión | Cambio |
 |---|---|---|
+| 2026-11-22 | 0.9.2 | Jose: botón «Otra categoría» en la pantalla de la categoría elegida, para cuando a nadie le falta ese color. Vuelve a girar la ruleta y excluye la categoría actual. |
 | 2026-11-22 | 0.9.1 | Jose: en Bandas sonoras, «Grupo o solista» (lado A) pasa a «Película». |
 | 2026-11-22 | 0.9.0 | Lista «Bandas sonoras», pedida por Jose: como Películas, pero la respuesta es la película, el año (de la película) y el cantante. Sexto dato en la fila: la película (título en español latino conocido, con el original entre paréntesis cuando son distintos). Solo con canciones de película, «Título» → «Película» y «Artista» → «Cantante» (`adaptCats`); los colores no cambian. Si una canción está en Películas y en Bandas sonoras, `allSongs` se queda con la que trae la película. |
 | 2026-11-21 | 0.8.0 | Cuatro listas nuevas pedidas por Jose: Música colombiana (35), Colombia 70 - 00's (34, éxitos colombianos e internacionales 1970-2009), Música boliviana (30) y Bolivia 70 - 20's (35, bolivianos e internacionales 1976-2022). Años de Los Kjarkas: el del álbum de estudio donde sale la canción (álbum visto en Spotify y año en la discografía de Wikipedia). Otros bolivianos: año de listas de prensa boliviana; cada canción se comprobó en Spotify. Años bolivianos menos seguros que el resto: Tiempo al tiempo (1995, álbum Quiquin Pacha; una lista dice 1988). |
