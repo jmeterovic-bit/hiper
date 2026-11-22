@@ -1,5 +1,9 @@
 # Cambios
 
+## 0.9.0 (2026-11-22)
+- Listas propias: nueva lista «Bandas sonoras» (50 canciones). Al «¡Tiempo!» la respuesta muestra primero la película, y debajo la canción y quién la canta; el año es el de la película.
+- Si juegas solo con «Bandas sonoras», en el lado B «Título» pasa a «Película» y «Artista» a «Cantante».
+
 ## 0.8.0 (2026-11-21)
 - Listas propias: cuatro listas nuevas, «Música colombiana», «Colombia 70 - 00's», «Música boliviana» y «Bolivia 70 - 20's» (en total, 12 temas y 383 canciones).
 

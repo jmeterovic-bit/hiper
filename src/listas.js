@@ -2,6 +2,7 @@
 // Cada canción: [título, artista, año, tipo, artista para buscar en Spotify (opcional)].
 // tipo: 'g' = grupo (también dúos y canciones con «feat.», como dicen las reglas), 's' = solista.
 // año: el año en que salió la canción original (en las de películas, el de la película).
+// En «Bandas sonoras» hay un sexto dato, la película; ahí el año es siempre el de la película.
 // La app busca cada canción en Spotify al momento de jugar: aquí no se guardan enlaces ni IDs.
 export const THEMES = [
   {
@@ -50,6 +51,60 @@ export const THEMES = [
       ['Into the Groove', 'Madonna', 1985, 's'],
       ['Fame', 'Irene Cara', 1980, 's'],
       ['9 to 5', 'Dolly Parton', 1980, 's']
+    ]
+  },
+  {
+    id: 'bandas-sonoras', name: 'Bandas sonoras', songs: [
+      ['Goldfinger', 'Shirley Bassey', 1964, 's', null, 'Goldfinger (007)'],
+      ['Mrs. Robinson', 'Simon & Garfunkel', 1967, 'g', null, 'El graduado (The Graduate)'],
+      ['Live and Let Die', 'Paul McCartney & Wings', 1973, 'g', 'Wings', 'Vive y deja morir (007)'],
+      ['Stayin\' Alive', 'Bee Gees', 1977, 'g', null, 'Fiebre de sábado por la noche (Saturday Night Fever)'],
+      ['Hopelessly Devoted to You', 'Olivia Newton-John', 1978, 's', null, 'Grease (Vaselina)'],
+      ['You\'re the One That I Want', 'John Travolta & Olivia Newton-John', 1978, 'g', 'John Travolta', 'Grease (Vaselina)'],
+      ['Fame', 'Irene Cara', 1980, 's', null, 'Fama (Fame)'],
+      ['9 to 5', 'Dolly Parton', 1980, 's', null, 'Nine to Five'],
+      ['Eye of the Tiger', 'Survivor', 1982, 'g', null, 'Rocky III'],
+      ['Up Where We Belong', 'Joe Cocker & Jennifer Warnes', 1982, 'g', 'Joe Cocker', 'Reto al destino (An Officer and a Gentleman)'],
+      ['Flashdance... What a Feeling', 'Irene Cara', 1983, 's', null, 'Flashdance'],
+      ['Footloose', 'Kenny Loggins', 1984, 's', null, 'Footloose'],
+      ['Holding Out for a Hero', 'Bonnie Tyler', 1984, 's', null, 'Footloose'],
+      ['Ghostbusters', 'Ray Parker Jr.', 1984, 's', null, 'Los cazafantasmas (Ghostbusters)'],
+      ['Purple Rain', 'Prince', 1984, 's', null, 'Purple Rain'],
+      ['Don\'t You (Forget About Me)', 'Simple Minds', 1985, 'g', null, 'El club de los cinco (The Breakfast Club)'],
+      ['The Power of Love', 'Huey Lewis & The News', 1985, 'g', 'Huey Lewis', 'Volver al futuro (Back to the Future)'],
+      ['St. Elmo\'s Fire (Man in Motion)', 'John Parr', 1985, 's', null, 'St. Elmo\'s Fire'],
+      ['A View to a Kill', 'Duran Duran', 1985, 'g', null, 'A View to a Kill (007)'],
+      ['Into the Groove', 'Madonna', 1985, 's', null, 'Desperately Seeking Susan'],
+      ['Take My Breath Away', 'Berlin', 1986, 'g', null, 'Top Gun'],
+      ['Danger Zone', 'Kenny Loggins', 1986, 's', null, 'Top Gun'],
+      ['Stand by Me', 'Ben E. King', 1986, 's', null, 'Cuenta conmigo (Stand by Me)'],
+      ['Glory of Love', 'Peter Cetera', 1986, 's', null, 'Karate Kid II'],
+      ['(I\'ve Had) The Time of My Life', 'Bill Medley & Jennifer Warnes', 1987, 'g', 'Bill Medley', 'Dirty Dancing'],
+      ['Unchained Melody', 'The Righteous Brothers', 1990, 'g', null, 'La sombra del amor (Ghost)'],
+      ['Oh, Pretty Woman', 'Roy Orbison', 1990, 's', null, 'Mujer bonita (Pretty Woman)'],
+      ['(Everything I Do) I Do It for You', 'Bryan Adams', 1991, 's', null, 'Robin Hood, príncipe de los ladrones'],
+      ['I Will Always Love You', 'Whitney Houston', 1992, 's', null, 'El guardaespaldas (The Bodyguard)'],
+      ['Streets of Philadelphia', 'Bruce Springsteen', 1993, 's', null, 'Philadelphia'],
+      ['Misirlou', 'Dick Dale & His Del-Tones', 1994, 'g', 'Dick Dale', 'Pulp Fiction'],
+      ['Shape of My Heart', 'Sting', 1994, 's', null, 'El perfecto asesino (Léon)'],
+      ['Gangsta\'s Paradise', 'Coolio feat. L.V.', 1995, 'g', 'Coolio', 'Mentes peligrosas (Dangerous Minds)'],
+      ['Kiss from a Rose', 'Seal', 1995, 's', null, 'Batman eternamente (Batman Forever)'],
+      ['My Heart Will Go On', 'Céline Dion', 1997, 's', null, 'Titanic'],
+      ['Men in Black', 'Will Smith', 1997, 's', null, 'Hombres de negro (Men in Black)'],
+      ['Iris', 'Goo Goo Dolls', 1998, 'g', null, 'Un ángel enamorado (City of Angels)'],
+      ['I Don\'t Want to Miss a Thing', 'Aerosmith', 1998, 'g', null, 'Armageddon'],
+      ['Lady Marmalade', 'Christina Aguilera, Lil\' Kim, Mýa y P!nk', 2001, 'g', 'Christina Aguilera', 'Moulin Rouge!'],
+      ['Lose Yourself', 'Eminem', 2002, 's', null, '8 Mile'],
+      ['Skyfall', 'Adele', 2012, 's', null, 'Skyfall'],
+      ['Happy', 'Pharrell Williams', 2013, 's', null, 'Mi villano favorito 2 (Despicable Me 2)'],
+      ['Writing\'s on the Wall', 'Sam Smith', 2015, 's', null, 'Spectre'],
+      ['See You Again', 'Wiz Khalifa feat. Charlie Puth', 2015, 'g', 'Wiz Khalifa', 'Rápidos y furiosos 7 (Furious 7)'],
+      ['Can\'t Stop the Feeling!', 'Justin Timberlake', 2016, 's', null, 'Trolls'],
+      ['City of Stars', 'Ryan Gosling & Emma Stone', 2016, 'g', 'Ryan Gosling', 'La La Land'],
+      ['This Is Me', 'Keala Settle', 2017, 's', null, 'El gran showman (The Greatest Showman)'],
+      ['Shallow', 'Lady Gaga & Bradley Cooper', 2018, 'g', 'Lady Gaga', 'Nace una estrella (A Star Is Born)'],
+      ['What Was I Made For?', 'Billie Eilish', 2023, 's', null, 'Barbie'],
+      ['Dance the Night', 'Dua Lipa', 2023, 's', null, 'Barbie']
     ]
   },
   {
