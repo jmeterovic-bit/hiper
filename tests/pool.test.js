@@ -97,6 +97,7 @@ describe('bandas sonoras', () => {
     const out = adaptCats(B, pool);
     expect(out[1]).toBe('Cantante');
     expect(out[2]).toBe('Película');
+    expect(adaptCats(['Década', 'Grupo o solista', 'Año ±2', 'Año ±4', '¿Antes o después del 2000?'], pool)[1]).toBe('Película');
   });
   it('mezclado con otras listas, las categorías no cambian por eso', () => {
     const out = adaptCats(B, buildPool({ mix: false, themes: ['bandas-sonoras', 'pop-en'] }));
