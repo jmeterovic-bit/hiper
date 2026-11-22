@@ -115,8 +115,10 @@ function renderLists() {
     (v) => setSettings({ choice: { ...ch, mix: false, decades: toggle(ch.mix ? [] : ch.decades, v) } }));
   const n = buildPool(ch).length;
   $('poolCount').textContent = ch.mix ? 'Suenan canciones de todas las listas.' : n ? n + ' canciones para jugar.' : 'Ninguna canción cumple esa elección.';
-  const adapted = adaptCats(SIDES.A.cats, buildPool(ch));
-  const changes = SIDES.A.cats.map((c, i) => (c !== adapted[i] ? `«${c}» será «${adapted[i]}»` : null)).filter(Boolean);
+  const changes = [...new Set(['A', 'B'].flatMap((k) => {
+    const adapted = adaptCats(SIDES[k].cats, buildPool(ch));
+    return SIDES[k].cats.map((c, i) => (c !== adapted[i] ? `«${c}» será «${adapted[i]}»` : null));
+  }).filter(Boolean))];
   if (n && changes.length) $('poolCount').textContent += ' Con esta elección, ' + changes.join(' y ') + '.';
 }
 $('mixAll').onclick = () => { setSettings({ choice: { mix: true, themes: [], decades: [] } }); renderLists(); };
@@ -158,8 +160,9 @@ function showAnswer() {
   clearTimeout(revealTimer);
   if (!song) return;
   $('reveal').hidden = true;
-  $('aTitle').textContent = song.title;
-  $('aArtist').textContent = song.artist;
+  // en las bandas sonoras manda la película; la canción va debajo, con el cantante
+  $('aTitle').textContent = song.film || song.title;
+  $('aArtist').textContent = song.film ? `«${song.title}» · ${song.artist}` : song.artist;
   $('aMeta').textContent = song.year + ' · ' + describeType(song.type);
   $('answer').hidden = false; $('tSub').hidden = true;
   fitText($('aTitle'), 32, 14); fitText($('aArtist'), 18, 12);

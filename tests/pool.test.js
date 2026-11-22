@@ -84,3 +84,27 @@ describe('adaptCats', () => {
     expect(adaptCats(A, songs(1995, 2005))).toEqual(A);
   });
 });
+
+describe('bandas sonoras', () => {
+  const B = ['Década', 'Artista', 'Título', 'Año exacto', 'Año ±3'];
+  it('cada canción de «Bandas sonoras» dice su película', () => {
+    const t = THEMES.find((x) => x.id === 'bandas-sonoras');
+    expect(t).toBeTruthy();
+    for (const r of t.songs) expect(typeof r[5] === 'string' && r[5].length > 1, r[0]).toBe(true);
+  });
+  it('solo bandas sonoras: «Título» pasa a «Película» y «Artista» a «Cantante»', () => {
+    const pool = buildPool({ mix: false, themes: ['bandas-sonoras'] });
+    const out = adaptCats(B, pool);
+    expect(out[1]).toBe('Cantante');
+    expect(out[2]).toBe('Película');
+  });
+  it('mezclado con otras listas, las categorías no cambian por eso', () => {
+    const out = adaptCats(B, buildPool({ mix: false, themes: ['bandas-sonoras', 'pop-en'] }));
+    expect(out[1]).toBe('Artista');
+    expect(out[2]).toBe('Título');
+  });
+  it('si una canción está en Películas y en Bandas sonoras, se queda la que dice la película', () => {
+    const s = allSongs().find((x) => x.title === 'My Heart Will Go On');
+    expect(s.film).toBe('Titanic');
+  });
+});

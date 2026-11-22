@@ -4,8 +4,8 @@ import { THEMES } from './listas.js';
 export const decadeOf = (year) => Math.floor(year / 10) * 10;
 const norm = (s) => String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 
-export function toSong([title, artist, year, type, search], theme) {
-  return { title, artist, year, type, search: search || artist, theme, key: norm(title) + '|' + norm(search || artist) };
+export function toSong([title, artist, year, type, search, film], theme) {
+  return { title, artist, year, type, search: search || artist, film: film || null, theme, key: norm(title) + '|' + norm(search || artist) };
 }
 
 // Todas las canciones, sin repetir (una canción puede estar en dos temas).
@@ -13,7 +13,8 @@ export function allSongs(themes = THEMES) {
   const seen = new Map();
   for (const t of themes) for (const row of t.songs) {
     const s = toSong(row, t.id);
-    if (!seen.has(s.key)) seen.set(s.key, s);
+    // si está repetida, gana la versión que dice de qué película es
+    if (!seen.has(s.key) || (s.film && !seen.get(s.key).film)) seen.set(s.key, s);
   }
   return [...seen.values()];
 }
@@ -52,10 +53,16 @@ export const describeType = (t) => (t === 'g' ? 'Grupo' : 'Solista');
 // - Varias décadas, pero todas antes (o todas después) del 2000: la pregunta usa el cambio de década
 //   que mejor reparte las canciones (p. ej. «¿Antes o después de 1990?»; 1990 cuenta como «después»).
 // Los colores no cambian, así que las tarjetas impresas siguen sirviendo.
+// - Todas de películas («Bandas sonoras»): «Título» pasa a «Película» y «Artista» a «Cantante».
 const yy = (y) => (y < 2000 ? String(y).slice(2) : String(y));
 export function adaptCats(cats, pool) {
   const out = [...cats];
   if (!pool || !pool.length) return out;
+  if (pool.every((s) => s.film)) {
+    const iT = cats.indexOf('Título'), iA = cats.indexOf('Artista');
+    if (iT >= 0) out[iT] = 'Película';
+    if (iA >= 0) out[iA] = 'Cantante';
+  }
   const decades = [...new Set(pool.map((s) => decadeOf(s.year)))].sort((a, b) => a - b);
   const iDec = cats.indexOf('Década');
   const i2000 = cats.indexOf('¿Antes o después del 2000?');
